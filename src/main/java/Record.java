@@ -1,8 +1,8 @@
 import java.util.Date;
 
 public class Record {
-    private boolean isRented;
     private final int recordID;
+    private boolean isRented;
     private String title;
     private String artist;
     private Date releaseDate;
@@ -37,5 +37,17 @@ public class Record {
 
     public void setRented(boolean rented) {
         isRented = rented;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
     }
 }
