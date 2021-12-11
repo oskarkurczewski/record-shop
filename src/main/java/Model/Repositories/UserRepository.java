@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserRepository {
-    private final List<Record> records =  new ArrayList<>();
     private final List<User> users = new ArrayList<>();
 
     public User getUserByID(int userid) {
@@ -32,25 +31,6 @@ public class UserRepository {
         return users.stream()
                 .filter( user -> login.contains(user.getLogin()))
                 .collect(Collectors.toList());
-    }
-
-    public void toggleActive(int userid) {
-        User user = this.getUserByID(userid);
-        user.setActive(!user.getActive());
-    }
-
-    public void setUserLogin(int userid, String newLogin) throws BasicException {
-        User user = this.getUserByID(userid);
-
-        if (user.getLogin().equals(newLogin)) {
-            throw new BasicException("This login is already set");
-        }
-
-        if (getUserByLogin(newLogin) == null) {
-            throw new BasicException("This login already exists");
-        }
-
-        user.setLogin(newLogin);
     }
 
     public void appendUser(String login) throws BasicException {

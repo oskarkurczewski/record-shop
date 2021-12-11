@@ -8,13 +8,12 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecordsRepository {
+public class RecordRepository {
     private final List<Record> records =  new ArrayList<>();
 
-
-    public Record getRecordByID(int id) {
+    public Record getRecordByID(int recordid) {
         return records.stream()
-                .filter( record -> id == record.getRecordID())
+                .filter( record -> recordid == record.getRecordID())
                 .findFirst()
                 .orElse(null);
     }
@@ -31,8 +30,8 @@ public class RecordsRepository {
         }
     }
 
-    public void removeRecord(int id) throws RentalException {
-        Record record = this.getRecordByID(id);
+    public void removeRecord(int recordid) throws RentalException {
+        Record record = this.getRecordByID(recordid);
 
         if (record.isRented()) {
             throw new RentalException("Can't remove - this record is rented.");
@@ -41,8 +40,8 @@ public class RecordsRepository {
         records.remove(record);
     }
 
-    public void modifyRecord(int id, String title, String artist, String releaseDate) throws BasicException {
-        Record record = this.getRecordByID(id);
+    public void modifyRecord(int recordid, String title, String artist, String releaseDate) throws BasicException {
+        Record record = this.getRecordByID(recordid);
 
         if (title != null) {
             record.setTitle(title);
