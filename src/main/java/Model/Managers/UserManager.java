@@ -3,19 +3,21 @@ package Model.Managers;
 import Model.Exceptions.BasicException;
 import Model.Repositories.UserRepository;
 import Model.User;
+import Model.UserType;
 
+import javax.enterprise.context.ApplicationScoped;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@ApplicationScoped
 public class UserManager {
     UserRepository repository = new UserRepository();
 
-    public void toggleActive(int userid) {
+    public void toggleActive(String userid) {
         User user = repository.getUserByID(userid);
         user.setActive(!user.getActive());
     }
 
-    public void setUserLogin(int userid, String newLogin) throws BasicException {
+    public void setUserLogin(String userid, String newLogin) throws BasicException {
         User user = repository.getUserByID(userid);
 
         if (user.getLogin().equals(newLogin)) {
@@ -29,7 +31,11 @@ public class UserManager {
         user.setLogin(newLogin);
     }
 
-    public User getUserByID(int userid) {
+    public List<User> getAllUsers() {
+        return repository.getAllUsers();
+    }
+
+    public User getUserByID(String userid) {
         return repository.getUserByID(userid);
     }
 
@@ -41,8 +47,8 @@ public class UserManager {
         return repository.getUsersByLogin(login);
     }
 
-    public void appendUser(String login) throws BasicException {
-        repository.appendUser(login);
+    public void appendUser(User user) throws BasicException {
+        repository.appendUser(user);
     }
 }
 

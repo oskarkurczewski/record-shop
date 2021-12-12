@@ -5,10 +5,13 @@ import Model.Exceptions.RentalException;
 import Model.Record;
 import Model.Repositories.RecordRepository;
 
+import javax.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
 public class RecordManager {
     RecordRepository repository = new RecordRepository();
 
-    public Record getRecordByID(int recordid) {
+    public Record getRecordByID(String recordid) {
         return repository.getRecordByID(recordid);
     }
 

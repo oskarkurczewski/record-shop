@@ -1,19 +1,24 @@
 package Model;
 
+import Model.Exceptions.PermissionException;
 import Model.Exceptions.RentalException;
 
 import java.util.Calendar;
 import java.util.Date;
 
 public class Rental {
-    private final Client client;
-    private final Renter renter;
+    private final User client;
+    private final User renter;
     private final Record record;
     private final Date rentDate;
     private Date expectedReturnDate;
     private Date actualReturnDate;
 
-    public Rental(Client client, Renter renter, Record record) {
+    public Rental(User client, User renter, Record record) throws PermissionException {
+        if (renter.getType() != UserType.RENTER) {
+            throw new PermissionException("Indicated renter has no permissions to do this operation");
+        }
+
         this.client = client;
         this.renter = renter;
         this.record = record;
@@ -24,11 +29,11 @@ public class Rental {
         this.expectedReturnDate = cal.getTime();
     }
 
-    public Client getClient() {
+    public User getClient() {
         return client;
     }
 
-    public Renter getRenter() {
+    public User getRenter() {
         return renter;
     }
 

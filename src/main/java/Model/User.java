@@ -1,20 +1,35 @@
 package Model;
 
+import Model.Exceptions.PermissionException;
+import Model.Exceptions.RentalException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class User {
-    private final int userID;
-    private String login;
-    private Boolean active;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-    public User(int userID, String login) {
-        this.userID = userID;
-        this.login = login;
-        this.active = true;
+public class User {
+    private final UUID userID;
+    private String login;
+    private UserType type;
+    private Boolean active;
+    private final List<Rental> rentals = new ArrayList<>();
+    private final List<Record> cart = new ArrayList<>();
+
+    public User() {
+        this.userID = UUID.randomUUID();
     }
 
-    public int getUserID() {
+    public User(String login, UserType type) {
+        this.userID = UUID.randomUUID();
+        this.login = login;
+        this.active = true;
+        this.type = type;
+    }
+
+
+    public UUID getUserID() {
         return userID;
     }
 
@@ -32,6 +47,76 @@ public class User {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public UserType getType() {
+        return type;
+    }
+
+    public void setType(UserType type) {
+        this.type = type;
+    }
+
+    // CART METHODS
+
+    public List<Record> getCart() {
+        return this.cart;
+    }
+
+    public void addToCart(Record record) throws RentalException {
+        if (record.isRented()) {
+            throw new RentalException("Record already rented");
+        }
+        cart.add(record);
+    }
+
+    public void removeFromCart(Record record) throws RentalException {
+        if (!cart.contains(record)) {
+            throw new RentalException("Record not in cart");
+        }
+        cart.remove(record);
+    }
+
+    public void clearCart() {
+        cart.clear();
+    }
+
+
+    // RENTALS METHODS
+
+    public List<Rental> getRentals() {
+        return this.rentals;
+    }
+
+    public void rentCart(User renter) throws PermissionException {
+        if (renter.getType() != UserType.RENTER) {
+            throw new PermissionException("Indicated renter has no permissions to do this operation");
+        }
+
+        for (Record record : this.cart) {
+            Rental newRent = new Rental(this, renter, record);
+            rentals.add(newRent);
+        }
+
+        this.clearCart();
+    }
+
+    public void clearRentals(User renter) throws PermissionException {
+        if (renter.getType() != UserType.RENTER) {
+            throw new PermissionException("Indicated renter has no permissions to do this operation");
+        }
+
+        rentals.clear();
+    }
+
+    public void extendRentReturnDays(User renter, int days) throws RentalException, PermissionException {
+        if (renter.getType() != UserType.RENTER) {
+            throw new PermissionException("Indicated renter has no permissions to do this operation");
+        }
+
+        for (Rental rental : this.rentals) {
+            rental.extendReturnDays(days);
+        }
     }
 
     @Override

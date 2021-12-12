@@ -1,5 +1,6 @@
 package Model;
 
+import Model.Exceptions.BasicException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -7,29 +8,39 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 public class Record {
-    private final int recordID;
+    private final UUID recordID;
     private boolean isRented;
     private String title;
     private String artist;
     private Date releaseDate;
 
-    public Record(int recordID, String title, String artist, String releaseDate) throws ParseException {
+    public Record() {
+        this.recordID = UUID.randomUUID();
+    }
+
+    public Record(String title, String artist, String releaseDate) throws BasicException {
         this.isRented = false;
-        this.recordID = recordID;
+        this.recordID = UUID.randomUUID();
         this.title = title;
         this.artist = artist;
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
-        this.releaseDate = formatter.parse(releaseDate);
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+            this.releaseDate = formatter.parse(releaseDate);
+        } catch (ParseException e) {
+            throw new BasicException("Cannot parse date");
+        }
+
     }
 
     public boolean isRented() {
         return isRented;
     }
 
-    public int getRecordID() {
+    public UUID getRecordID() {
         return recordID;
     }
 
