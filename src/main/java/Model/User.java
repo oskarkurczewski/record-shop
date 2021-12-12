@@ -1,5 +1,6 @@
 package Model;
 
+import Model.Exceptions.BasicException;
 import Model.Exceptions.PermissionException;
 import Model.Exceptions.RentalException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -28,7 +29,6 @@ public class User {
         this.type = type;
     }
 
-
     public UUID getUserID() {
         return userID;
     }
@@ -37,12 +37,22 @@ public class User {
         return login;
     }
 
-    public Boolean getActive() {
+    public Boolean isActive() {
         return active;
     }
 
-    public void setActive(Boolean active) {
-        this.active = active;
+    public void activate() throws BasicException {
+        if (this.active) {
+            throw new BasicException("User already activated");
+        }
+        this.active = true;
+    }
+
+    public void deactivate() throws BasicException {
+        if (!this.active) {
+            throw new BasicException("User already deactivated");
+        }
+        this.active = false;
     }
 
     public void setLogin(String login) {

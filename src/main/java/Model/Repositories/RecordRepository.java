@@ -1,6 +1,7 @@
 package Model.Repositories;
 
 import Model.Exceptions.BasicException;
+import Model.Exceptions.NotFoundException;
 import Model.Exceptions.RentalException;
 import Model.Record;
 
@@ -30,20 +31,23 @@ public class RecordRepository {
         return records;
     }
 
-    public Record getRecordByID(String recordid) {
-        return records.stream()
-                .filter( record -> recordid.equals(record.getRecordID().toString()))
+    public Record getRecordByID(String recordid) throws NotFoundException {
+        Record record = records.stream()
+                .filter( r -> recordid.equals(r.getRecordID().toString()))
                 .findFirst()
                 .orElse(null);
+        if (record == null) {
+            throw new NotFoundException("Record not found");
+        }
+        return record;
     }
 
 
-    public void appendRecord(String title, String artist, String releaseDate) throws BasicException {
-        Record newRecord = new Record(title, artist, releaseDate);
-        records.add(newRecord);
+    public void appendRecord(Record record) throws BasicException {
+        records.add(record);
     }
 
-    public void removeRecord(String recordid) throws RentalException {
+    public void removeRecord(String recordid) throws RentalException, NotFoundException {
         Record record = this.getRecordByID(recordid);
 
         if (record.isRented()) {
@@ -51,25 +55,5 @@ public class RecordRepository {
         }
 
         records.remove(record);
-    }
-
-    public void modifyRecord(String recordid, String title, String artist, String releaseDate) throws BasicException {
-        Record record = this.getRecordByID(recordid);
-
-        if (title != null) {
-            record.setTitle(title);
-        }
-
-        if (artist != null) {
-            record.setArtist(artist);
-        }
-
-        if (releaseDate != null) {
-            try {
-                record.setReleaseDate(releaseDate);
-            } catch (ParseException e) {
-                throw new BasicException("Wrong date format");
-            }
-        }
     }
 }

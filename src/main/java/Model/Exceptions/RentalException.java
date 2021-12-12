@@ -1,6 +1,6 @@
 package Model.Exceptions;
 
-public class RentalException extends Exception {
+public class RentalException extends BasicException {
     public RentalException(String message) {
         super(message);
     }

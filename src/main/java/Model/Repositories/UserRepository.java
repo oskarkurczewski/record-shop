@@ -2,6 +2,7 @@ package Model.Repositories;
 
 import Model.*;
 import Model.Exceptions.BasicException;
+import Model.Exceptions.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,11 +26,15 @@ public class UserRepository {
         return users;
     }
 
-    public User getUserByID(String userid) {
-        return users.stream()
-                .filter( user -> userid.equals(user.getUserID().toString()))
+    public User getUserByID(String userid) throws NotFoundException {
+        User user = users.stream()
+                .filter( u -> userid.equals(u.getUserID().toString()))
                 .findFirst()
                 .orElse(null);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        return user;
     }
 
     public User getUserByLogin(String login) {
@@ -51,6 +56,12 @@ public class UserRepository {
         }
 
         users.add(user);
+    }
+
+    public void removeUser(String userid) throws BasicException {
+        User user = this.getUserByID(userid);
+
+        users.remove(user);
     }
 
 }

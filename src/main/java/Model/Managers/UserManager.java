@@ -1,9 +1,9 @@
 package Model.Managers;
 
 import Model.Exceptions.BasicException;
+import Model.Exceptions.NotFoundException;
 import Model.Repositories.UserRepository;
 import Model.User;
-import Model.UserType;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.util.List;
@@ -11,11 +11,6 @@ import java.util.List;
 @ApplicationScoped
 public class UserManager {
     UserRepository repository = new UserRepository();
-
-    public void toggleActive(String userid) {
-        User user = repository.getUserByID(userid);
-        user.setActive(!user.getActive());
-    }
 
     public void setUserLogin(String userid, String newLogin) throws BasicException {
         User user = repository.getUserByID(userid);
@@ -35,7 +30,7 @@ public class UserManager {
         return repository.getAllUsers();
     }
 
-    public User getUserByID(String userid) {
+    public User getUserByID(String userid) throws NotFoundException {
         return repository.getUserByID(userid);
     }
 
@@ -50,6 +45,11 @@ public class UserManager {
     public void appendUser(User user) throws BasicException {
         repository.appendUser(user);
     }
+
+    public void removeUser(String userid) throws BasicException {
+        repository.removeUser(userid);
+    }
+
 }
 
 

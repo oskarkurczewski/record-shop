@@ -11,7 +11,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 public class Record {
-    private final UUID recordID;
+    private UUID recordID;
     private boolean isRented;
     private String title;
     private String artist;
@@ -42,6 +42,10 @@ public class Record {
 
     public UUID getRecordID() {
         return recordID;
+    }
+
+    public void setRecordID(String id) {
+        this.recordID = UUID.fromString(id);
     }
 
     public String getTitle() {
