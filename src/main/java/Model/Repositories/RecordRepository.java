@@ -16,8 +16,8 @@ public class RecordRepository {
     public RecordRepository() {
         try {
             Record[] arr = {
-                    new Record("Moral Panic", "Nothing but Thieves", "23-10-2020"),
-                    new Record("Solar Power", "Lorde", "20-08-2021")
+                    new Record("Solar Panic", "Nothing but Lorde", "23-10-2020"),
+                    new Record("Moral Power", "Thieves", "20-08-2021")
             };
 
             this.records  =  new ArrayList<>(Arrays.asList(arr));

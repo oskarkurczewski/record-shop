@@ -16,8 +16,10 @@ public class UserRepository {
         User[] arr = {
                 new User( "Eleanor", UserType.CLIENT),
                 new User("Jason", UserType.CLIENT),
-                new User("Chidi", UserType.ADMINISTRATOR),
-                new User("Tahani", UserType.RENTER)
+                new User("Chidi", UserType.CLIENT),
+                new User("Tahani", UserType.CLIENT),
+                new User("Michael", UserType.ADMINISTRATOR),
+                new User("DiscoJanet", UserType.RENTER)
         };
         this.users = new ArrayList<>(Arrays.asList(arr));
     }

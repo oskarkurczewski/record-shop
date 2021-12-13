@@ -53,6 +53,8 @@ public class Rental {
         return actualReturnDate;
     }
 
+    public int callCops() { return 997; }
+
     public void returnRecord() {
         this.actualReturnDate = new Date();
         this.record.setRented(false);

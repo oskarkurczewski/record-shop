@@ -14,7 +14,7 @@ public class User {
     private final UUID userID;
     private String login;
     private UserType type;
-    private Boolean active;
+    private Boolean active = true;
     private final List<Rental> rentals = new ArrayList<>();
     private final List<Record> cart = new ArrayList<>();
 
@@ -25,7 +25,7 @@ public class User {
     public User(String login, UserType type) {
         this.userID = UUID.randomUUID();
         this.login = login;
-        this.active = true;
+//        this.active = true;
         this.type = type;
     }
 
