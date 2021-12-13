@@ -13,7 +13,7 @@ import java.util.UUID;
 public class User {
     private final UUID userID;
     private String login;
-    private UserType type;
+    private final UserType type;
     private Boolean active = true;
     private final List<Rental> rentals = new ArrayList<>();
     private final List<Rental> archiveRentals = new ArrayList<>();
@@ -90,7 +90,11 @@ public class User {
         return this.rentals;
     }
 
-    public void rentCart(User renter) throws PermissionException {
+    public List<Rental> getArchiveRentals() {
+        return archiveRentals;
+    }
+
+    public void rentCart(User renter) throws PermissionException, InputException {
         if (renter.getType() != UserType.RENTER) {
             throw new PermissionException("Indicated renter has no permissions to do this operation");
         }

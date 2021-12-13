@@ -1,5 +1,6 @@
 package Model;
 
+import Model.Exceptions.InputException;
 import Model.Exceptions.PermissionException;
 import Model.Exceptions.RentalException;
 
@@ -14,7 +15,7 @@ public class Rental {
     private Date expectedReturnDate;
     private Date actualReturnDate;
 
-    public Rental(User client, User renter, Record record) throws PermissionException {
+    public Rental(User client, User renter, Record record) throws PermissionException, InputException {
         if (renter.getType() != UserType.RENTER) {
             throw new PermissionException("Indicated renter has no permissions to do this operation");
         }
@@ -22,7 +23,9 @@ public class Rental {
         this.client = client;
         this.renter = renter;
         this.record = record;
+
         this.rentDate = new Date();
+        this.record.rent(this);
 
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, 7);
@@ -55,9 +58,9 @@ public class Rental {
 
     public int callCops() { return 997; }
 
-    public void returnRecord() {
+    public void returnRecord() throws InputException {
         this.actualReturnDate = new Date();
-        this.record.setRented(false);
+        this.record.release();
     }
 
     public void extendReturnDays(int days) throws RentalException {
