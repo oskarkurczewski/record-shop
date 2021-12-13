@@ -50,12 +50,12 @@ public class RecordWebservice {
             JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
 
             String title = jsonBody.get("title").getAsString();
-            if (!title.matches("^[a-z0-9_-]{3,50}$")) {
+            if (!title.matches("^[a-zA-Z0-9_-]{3,50}$")) {
                 throw new InputException("Title must be between 3 and 50 characters");
             }
 
             String artist = jsonBody.get("artist").getAsString();
-            if (!artist.matches("^[a-z0-9_-]{3,50}$")) {
+            if (!artist.matches("^[a-zA-Z0-9_-]{3,50}$")) {
                 throw new InputException("Artist name must be between 3 and 50 characters");
             }
 
