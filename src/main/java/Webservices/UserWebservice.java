@@ -22,7 +22,6 @@ public class UserWebservice {
     @Inject
     private UserManager userManager;
 
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserByLogin(@QueryParam("login") String login, @QueryParam("userid") String userid){
@@ -66,9 +65,10 @@ public class UserWebservice {
     }
 
     @DELETE
+    @Path("{userid}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteUser(@QueryParam("userid") String userid){
+    public Response deleteUser(@PathParam("userid") String userid){
         try {
             User user = userManager.getUserByID(userid);
             userManager.removeUser(userid);
@@ -81,10 +81,10 @@ public class UserWebservice {
     }
 
     @POST
-    @Path("changeLogin")
+    @Path("{userid}/changeLogin")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response changeUserLogin(@QueryParam("userid") String userid, String body){
+    public Response changeUserLogin(@PathParam("userid") String userid, String body){
         try {
             JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
 
@@ -103,9 +103,9 @@ public class UserWebservice {
     }
 
     @POST
-    @Path("activate")
+    @Path("{userid}/activate")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response activateUser(@QueryParam("userid") String userid){
+    public Response activateUser(@PathParam("userid") String userid){
         try {
             User user = userManager.getUserByID(userid);
             user.activate();
@@ -118,9 +118,9 @@ public class UserWebservice {
     }
 
     @POST
-    @Path("deactivate")
+    @Path("{userid}/deactivate")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deactivateUser(@QueryParam("userid") String userid){
+    public Response deactivateUser(@PathParam("userid") String userid){
         try {
             User user = userManager.getUserByID(userid);
             user.deactivate();
