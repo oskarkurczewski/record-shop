@@ -37,6 +37,7 @@ public class User {
         return active;
     }
 
+
     public void activate() throws InputException {
         if (this.active) {
             throw new InputException("User already activated");
@@ -66,6 +67,10 @@ public class User {
     }
 
     public void addToCart(Record record) throws RentalException {
+        if (!this.active) {
+            throw new RentalException("User is not active");
+        }
+
         if (record.isRented()) {
             throw new RentalException("Record already rented");
         }
@@ -73,13 +78,21 @@ public class User {
     }
 
     public void removeFromCart(Record record) throws RentalException {
+        if (!this.active) {
+            throw new RentalException("User is not active");
+        }
+
         if (!cart.contains(record)) {
             throw new RentalException("Record not in cart");
         }
         cart.remove(record);
     }
 
-    public void clearCart() {
+    public void clearCart() throws RentalException {
+        if (!this.active) {
+            throw new RentalException("User is not active");
+        }
+
         cart.clear();
     }
 
@@ -94,7 +107,11 @@ public class User {
         return archiveRentals;
     }
 
-    public void rentCart(User renter) throws PermissionException, InputException {
+    public void rentCart(User renter) throws PermissionException, InputException, RentalException {
+        if (!this.active) {
+            throw new RentalException("User is not active");
+        }
+
         if (renter.getType() != UserType.RENTER) {
             throw new PermissionException("Indicated renter has no permissions to do this operation");
         }
@@ -107,7 +124,11 @@ public class User {
         this.clearCart();
     }
 
-    public void clearRentals(User renter) throws PermissionException {
+    public void clearRentals(User renter) throws PermissionException, RentalException {
+        if (!this.active) {
+            throw new RentalException("User is not active");
+        }
+
         if (renter.getType() != UserType.RENTER) {
             throw new PermissionException("Indicated renter has no permissions to do this operation");
         }
@@ -117,6 +138,10 @@ public class User {
     }
 
     public void extendRentReturnDays(User renter, int days) throws RentalException, PermissionException {
+        if (!this.active) {
+            throw new RentalException("User is not active");
+        }
+
         if (renter.getType() != UserType.RENTER) {
             throw new PermissionException("Indicated renter has no permissions to do this operation");
         }
