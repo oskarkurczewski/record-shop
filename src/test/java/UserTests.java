@@ -19,18 +19,19 @@ public class UserTests {
         Response postResponse = given().
                 contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body("{\"login\": \"janet12345\", \"active\": true, \"type\": \"CLIENT\"}")
+                .body("{\"login\": \"janet12345\", \"type\": \"CLIENT\"}")
                 .when()
                 .post(ROOT_URI);
         try {
             JSONObject postJSON = (JSONObject) new JSONParser().parse(postResponse.asString());
             String userID = (String) postJSON.get("userID");
 
+            System.out.println(postResponse.asString());
+
             postResponse.then().assertThat()
                     .statusCode(HttpStatus.SC_OK)
                     .body("login", is("janet12345"))
-                    .body("type", is("CLIENT"))
-                    .body("active", is(false));
+                    .body("type", is("CLIENT"));
 
             try {
                 Response getResponse = get(ROOT_URI + "/" + userID);
@@ -38,8 +39,7 @@ public class UserTests {
                 getResponse.then()
                         .body("login", is("janet12345"))
                         .body("type", is("CLIENT"))
-                        .body("userID", is(userID))
-                        .body("active", is(true));
+                        .body("userID", is(userID));
             } finally {
                 delete(ROOT_URI + "/" + userID);
             }
@@ -53,14 +53,14 @@ public class UserTests {
         Response firstPOSTResponse = given().
                 contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body("{\"login\": \"janet1234\", \"active\": true, \"type\": \"CLIENT\"}")
+                .body("{\"login\": \"janet1234\", \"type\": \"CLIENT\"}")
                 .when()
                 .post(ROOT_URI);
 
         Response secondPOSTResponse = given().
                 contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body("{\"login\": \"janet5678\", \"active\": true, \"type\": \"RENTER\"}")
+                .body("{\"login\": \"janet5678\", \"type\": \"RENTER\"}")
                 .when()
                 .post(ROOT_URI);
 
@@ -75,21 +75,18 @@ public class UserTests {
                 firstPOSTResponse.then().assertThat()
                         .statusCode(HttpStatus.SC_OK)
                         .body("login", is("janet1234"))
-                        .body("type", is("CLIENT"))
-                        .body("active", is(true));
+                        .body("type", is("CLIENT"));
 
                 secondPOSTResponse.then().assertThat()
                         .statusCode(HttpStatus.SC_OK)
                         .body("login", is("janet5678"))
-                        .body("type", is("RENTER"))
-                        .body("active", is(true));
+                        .body("type", is("RENTER"));
 
                 Response getResponse = get(ROOT_URI + "?login=janet");
                 getResponse.then()
                         .body("login", hasItems("janet1234", "janet5678"))
                         .body("type", hasItems("RENTER", "CLIENT"))
-                        .body("userID", hasItems(firstUserID, secondUserID))
-                        .body("active", hasItems(true, true));
+                        .body("userID", hasItems(firstUserID, secondUserID));
 
             } finally {
                 delete(ROOT_URI + "/" + firstUserID);
@@ -105,7 +102,7 @@ public class UserTests {
         Response CreateResponse = given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body("{\"login\": \"janet1234\", \"active\": true, \"type\": \"CLIENT\"}")
+                .body("{\"login\": \"janet1234\", \"type\": \"CLIENT\"}")
                 .when()
                 .post(ROOT_URI);
 
@@ -117,8 +114,7 @@ public class UserTests {
                 CreateResponse.then().assertThat()
                         .statusCode(HttpStatus.SC_OK)
                         .body("login", is("janet1234"))
-                        .body("type", is("CLIENT"))
-                        .body("active", is(true));
+                        .body("type", is("CLIENT"));
 
                 Response UpdateResponse = given()
                         .contentType(ContentType.JSON)
@@ -130,8 +126,7 @@ public class UserTests {
                 UpdateResponse.then().assertThat()
                         .statusCode(HttpStatus.SC_OK)
                         .body("login", is("janet5678"))
-                        .body("type", is("CLIENT"))
-                        .body("active", is(true));
+                        .body("type", is("CLIENT"));
 
             } finally {
                 delete(ROOT_URI + "/" + userID);
