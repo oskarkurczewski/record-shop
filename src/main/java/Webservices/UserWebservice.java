@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @ApplicationScoped
 @Path("users")
@@ -24,7 +25,7 @@ public class UserWebservice {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUsers(@QueryParam("login") String login, @QueryParam("userID") String userID){
+    public Response getUsers(@QueryParam("login") String login){
         if (login != null) {
             return Response.ok(userManager.getUsersByLogin(login)).build();
         } else {

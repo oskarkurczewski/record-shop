@@ -8,9 +8,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class Rental {
-    //    private final User client;
-    //    private final User renter;
-    private final Record record;
+    private final String clientID;
+    private final String renterID;
+    private final String recordID;
+
+    private transient final User client;
+    private transient final User renter;
+    private transient final Record record;
+
     private final Date rentDate;
     private Date expectedReturnDate;
     private Date actualReturnDate;
@@ -20,8 +25,12 @@ public class Rental {
             throw new PermissionException("Indicated renter has no permissions to do this operation");
         }
 
-        //        this.client = client;
-        //        this.renter = renter;
+        this.clientID = client.getUserID().toString();
+        this.renterID = renter.getUserID().toString();
+        this.recordID = record.getRecordID().toString();
+
+        this.client = client;
+        this.renter = renter;
         this.record = record;
 
         this.rentDate = new Date();
@@ -32,13 +41,25 @@ public class Rental {
         this.expectedReturnDate = cal.getTime();
     }
 
-    //    public User getClient() {
-    //        return client;
-    //    }
-    //
-    //    public User getRenter() {
-    //        return renter;
-    //    }
+        public User getClient() {
+            return client;
+        }
+
+        public User getRenter() {
+            return renter;
+        }
+
+    public String getClientID() {
+        return clientID;
+    }
+
+    public String getRenterID() {
+        return renterID;
+    }
+
+    public String getRecordID() {
+        return recordID;
+    }
 
     public Date getRentDate() {
         return rentDate;
@@ -73,4 +94,6 @@ public class Rental {
 
         this.expectedReturnDate = cal.getTime();
     }
+
+
 }
