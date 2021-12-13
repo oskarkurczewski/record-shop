@@ -83,14 +83,8 @@ public class RentWebservice {
             User user = userManager.getUserByID(userid);
             user.clearCart();
             return Response.ok(user.getCart()).build();
-        } catch (NotFoundException e) {
-<<<<<<< HEAD
+        } catch (NotFoundException | RentalException e) {
             return Response.status(404).entity(e).build();
-=======
-            return Response.status(404, e.toString()).build();
-        } catch (RentalException e) {
-            return Response.status(400, e.toString()).build();
->>>>>>> 9ad8640187e059ae35e55a2676cbafb0da78f067
         }
     }
 
@@ -112,6 +106,8 @@ public class RentWebservice {
             return Response.status(403).entity(e).build();
         } catch (InputException e) {
             return Response.status(400).entity(e).build();
+        } catch (RentalException e) {
+            return Response.status(400).entity(e).build();
         }
     }
 
@@ -129,7 +125,7 @@ public class RentWebservice {
             return Response.ok(user.getRentals()).build();
         } catch (NotFoundException e) {
             return Response.status(404).entity(e).build();
-        } catch (PermissionException e) {
+        } catch (PermissionException | RentalException e) {
             return Response.status(403).entity(e).build();
         }
     }
