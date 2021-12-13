@@ -22,10 +22,6 @@ public class User {
     public User(String login, UserType type) {
         this.userID = UUID.randomUUID();
         this.login = login;
-<<<<<<< HEAD
-//        this.active = true;
-=======
->>>>>>> d37807d178a26e4fc297c7493e6477447908d9b5
         this.type = type;
     }
 
