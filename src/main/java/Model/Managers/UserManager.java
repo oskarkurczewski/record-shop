@@ -1,6 +1,7 @@
 package Model.Managers;
 
 import Model.Exceptions.BasicException;
+import Model.Exceptions.InputException;
 import Model.Exceptions.NotFoundException;
 import Model.Repositories.UserRepository;
 import Model.User;
@@ -12,15 +13,15 @@ import java.util.List;
 public class UserManager {
     UserRepository repository = new UserRepository();
 
-    public void setUserLogin(String userid, String newLogin) throws BasicException {
+    public void setUserLogin(String userid, String newLogin) throws InputException, NotFoundException {
         User user = repository.getUserByID(userid);
 
         if (user.getLogin().equals(newLogin)) {
-            throw new BasicException("This login is already set");
+            throw new InputException("This login is already set");
         }
 
         if (repository.getUserByLogin(newLogin) == null) {
-            throw new BasicException("This login already exists");
+            throw new InputException("This login already exists");
         }
 
         user.setLogin(newLogin);
@@ -42,7 +43,7 @@ public class UserManager {
         return repository.getUsersByLogin(login);
     }
 
-    public void appendUser(User user) throws BasicException {
+    public void appendUser(User user) throws InputException {
         repository.appendUser(user);
     }
 

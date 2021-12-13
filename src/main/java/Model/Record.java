@@ -60,6 +60,10 @@ public class Record {
         return releaseDate;
     }
 
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
     public void setRented(boolean rented) {
         isRented = rented;
     }

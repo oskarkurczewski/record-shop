@@ -1,6 +1,7 @@
 package Model;
 
 import Model.Exceptions.BasicException;
+import Model.Exceptions.InputException;
 import Model.Exceptions.PermissionException;
 import Model.Exceptions.RentalException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -14,7 +15,7 @@ public class User {
     private final UUID userID;
     private String login;
     private UserType type;
-    private Boolean active;
+    private Boolean active = true;
     private final List<Rental> rentals = new ArrayList<>();
     private final List<Record> cart = new ArrayList<>();
 
@@ -25,7 +26,6 @@ public class User {
     public User(String login, UserType type) {
         this.userID = UUID.randomUUID();
         this.login = login;
-        this.active = true;
         this.type = type;
     }
 
@@ -41,16 +41,16 @@ public class User {
         return active;
     }
 
-    public void activate() throws BasicException {
+    public void activate() throws InputException {
         if (this.active) {
-            throw new BasicException("User already activated");
+            throw new InputException("User already activated");
         }
         this.active = true;
     }
 
-    public void deactivate() throws BasicException {
+    public void deactivate() throws InputException {
         if (!this.active) {
-            throw new BasicException("User already deactivated");
+            throw new InputException("User already deactivated");
         }
         this.active = false;
     }

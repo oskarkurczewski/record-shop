@@ -1,10 +1,13 @@
 package Model.Managers;
 
 import Model.Exceptions.BasicException;
+import Model.Exceptions.InputException;
 import Model.Exceptions.NotFoundException;
 import Model.Exceptions.RentalException;
 import Model.Record;
 import Model.Repositories.RecordRepository;
+
+import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -36,20 +39,21 @@ public class RecordManager {
         Record recordFound = this.getRecordByID(record.getRecordID().toString());
 
         String title = record.getTitle();
-        if (title.equals("")) {
+        if (!title.equals("")) {
             recordFound.setTitle(title);
         }
 
         String artist = record.getArtist();
-        if (artist.equals("")) {
+        if (!artist.equals("")) {
             recordFound.setArtist(artist);
         }
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
-        String releaseDate = formatter.format(record.getReleaseDate());
-        if (releaseDate.equals("")) {
+        Date releaseDate = record.getReleaseDate();
+        if (releaseDate != null) {
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+            String releaseDateString = formatter.format(record.getReleaseDate());
             try {
-                record.setReleaseDate(releaseDate);
+                record.setReleaseDate(releaseDateString);
             } catch (ParseException e) {
                 throw new BasicException("Wrong date format");
             }

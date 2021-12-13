@@ -2,6 +2,7 @@ package Model.Repositories;
 
 import Model.*;
 import Model.Exceptions.BasicException;
+import Model.Exceptions.InputException;
 import Model.Exceptions.NotFoundException;
 
 import java.util.ArrayList;
@@ -50,9 +51,9 @@ public class UserRepository {
                 .collect(Collectors.toList());
     }
 
-    public void appendUser(User user) throws BasicException {
+    public void appendUser(User user) throws InputException {
         if (this.getUserByLogin(user.getLogin()) != null) {
-            throw new BasicException("This login already exists");
+            throw new InputException("This login already exists");
         }
 
         users.add(user);
