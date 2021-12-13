@@ -14,21 +14,6 @@ public class RecordTests {
 
     private final String ROOT_URI = "http://localhost:8080/record-shop-1.0-SNAPSHOT/record-shop/records";
 
-//    private String mapToJSONString(Map<String, Object> map) {
-//        String out = "{";
-//
-//        ArrayList<String> entries = new ArrayList<>();
-//        for (Map.Entry entry: map.entrySet()) {
-//            entries.add("\"" + entry.getKey() + "\": " + entry.getValue().getClass() == "String" : entry.getValue().toString());
-//        }
-//        for (int i = 0; i < entries.size()-1; i++) {
-//            out += entries.get(i) + ", ";
-//        }
-//        out += entries.get(entries.size()-1) + "}";
-//
-//        return out;
-//    }
-
     @Test
     public void testCreate() {
         Response postResponse = given().
