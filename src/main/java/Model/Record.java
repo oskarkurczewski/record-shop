@@ -1,26 +1,22 @@
 package Model;
 
-import Model.Exceptions.BasicException;
 import Model.Exceptions.InputException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
 public class Record {
     private UUID recordID;
+    private Rental currentRent;
+    private final List<Rental> archiveRents = new ArrayList<>();
     private boolean isRented;
+
     private String title;
     private String artist;
     private Date releaseDate;
-
-    public Record() {
-        this.recordID = UUID.randomUUID();
-    }
 
     public Record(String title, String artist, String releaseDate) throws InputException {
         this.isRented = false;
@@ -34,7 +30,6 @@ public class Record {
         } catch (ParseException e) {
             throw new InputException("Cannot parse date");
         }
-
     }
 
     public boolean isRented() {
@@ -43,6 +38,14 @@ public class Record {
 
     public UUID getRecordID() {
         return recordID;
+    }
+
+    public List<Rental> getArchiveRents() {
+        return archiveRents;
+    }
+
+    public Rental getCurrentRent() {
+        return currentRent;
     }
 
     public void setRecordID(String id) {
@@ -65,8 +68,21 @@ public class Record {
         this.releaseDate = releaseDate;
     }
 
-    public void setRented(boolean rented) {
-        isRented = rented;
+    public void rent(Rental rental) throws InputException {
+        if (this.isRented) {
+            throw new InputException("Record already rented");
+        }
+        this.isRented = true;
+        this.currentRent = rental;
+    }
+
+    public void release() throws InputException {
+        if (!this.isRented) {
+            throw new InputException("This record is not rented");
+        }
+        this.archiveRents.add(this.currentRent);
+        this.isRented = false;
+        this.currentRent = null;
     }
 
     public void setTitle(String title) {

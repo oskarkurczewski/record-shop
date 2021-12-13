@@ -1,6 +1,5 @@
 package Model;
 
-import Model.Exceptions.BasicException;
 import Model.Exceptions.InputException;
 import Model.Exceptions.PermissionException;
 import Model.Exceptions.RentalException;
@@ -17,11 +16,8 @@ public class User {
     private UserType type;
     private Boolean active = true;
     private final List<Rental> rentals = new ArrayList<>();
+    private final List<Rental> archiveRentals = new ArrayList<>();
     private final List<Record> cart = new ArrayList<>();
-
-    public User() {
-        this.userID = UUID.randomUUID();
-    }
 
     public User(String login, UserType type) {
         this.userID = UUID.randomUUID();
@@ -61,10 +57,6 @@ public class User {
 
     public UserType getType() {
         return type;
-    }
-
-    public void setType(UserType type) {
-        this.type = type;
     }
 
     // CART METHODS
@@ -116,6 +108,7 @@ public class User {
             throw new PermissionException("Indicated renter has no permissions to do this operation");
         }
 
+        this.archiveRentals.addAll(this.rentals);
         rentals.clear();
     }
 
