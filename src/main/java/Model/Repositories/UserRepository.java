@@ -31,7 +31,7 @@ public class UserRepository {
 
     public User getUserByID(String userid) throws NotFoundException {
         User user = users.stream()
-                .filter( u -> u.getUserID().equals(userid))
+                .filter( u -> u.getUserID().toString().equals(userid))
                 .findFirst()
                 .orElse(null);
         if (user == null) {

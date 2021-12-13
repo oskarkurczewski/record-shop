@@ -102,8 +102,10 @@ public class UserWebservice {
             userManager.setUserLogin(userID, login);
 
             return Response.ok(user).build();
-        } catch (NotFoundException | InputException e) {
+        } catch (InputException e) {
             return Response.status(400).entity(e).build();
+        } catch (NotFoundException e) {
+            return Response.status(404).entity(e).build();
         }
     }
 
