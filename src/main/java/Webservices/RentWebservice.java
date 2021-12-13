@@ -1,5 +1,6 @@
 package Webservices;
 
+<<<<<<< HEAD
 import Model.Exceptions.NotFoundException;
 import Model.Exceptions.RentalException;
 import Model.Managers.RecordManager;
@@ -10,11 +11,22 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import javax.enterprise.context.ApplicationScoped;
+=======
+import Model.Exceptions.*;
+import Model.Exceptions.NotFoundException;
+import Model.User;
+import Model.Record;
+import Model.Managers.*;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+>>>>>>> d37807d178a26e4fc297c7493e6477447908d9b5
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+<<<<<<< HEAD
 @ApplicationScoped
 @Path("users")
 public class RentWebservice {
@@ -42,11 +54,29 @@ public class RentWebservice {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addRentToCart(String body) {
+=======
+public class RentWebservice {
+    @Inject
+    RecordManager recordManager;
+
+    @Inject
+    UserManager userManager;
+
+    @DELETE
+    @Path("/cart")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response removeRentFromCart(String body) {
+>>>>>>> d37807d178a26e4fc297c7493e6477447908d9b5
 
         JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
         try {
             User user = userManager.getUserByID(jsonBody.get("userid").getAsString());
+<<<<<<< HEAD
             user.addToCart(recordManager.getRecordByID(jsonBody.get("recordid").getAsString()));
+=======
+            user.removeFromCart(recordManager.getRecordByID(jsonBody.get("recordid").getAsString()));
+>>>>>>> d37807d178a26e4fc297c7493e6477447908d9b5
             return Response.ok(user.getCart()).build();
         } catch (NotFoundException e) {
             return Response.status(404, e.toString()).build();
@@ -54,6 +84,7 @@ public class RentWebservice {
             return Response.status(400, e.toString()).build();
         }
     }
+<<<<<<< HEAD
 
     @DELETE
     @Path("{userid}/cart/{recordid}")
@@ -86,4 +117,6 @@ public class RentWebservice {
         }
     }
 
+=======
+>>>>>>> d37807d178a26e4fc297c7493e6477447908d9b5
 }

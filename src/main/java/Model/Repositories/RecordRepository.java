@@ -1,6 +1,7 @@
 package Model.Repositories;
 
 import Model.Exceptions.BasicException;
+import Model.Exceptions.InputException;
 import Model.Exceptions.NotFoundException;
 import Model.Exceptions.RentalException;
 import Model.Record;
@@ -21,7 +22,7 @@ public class RecordRepository {
             };
 
             this.records  =  new ArrayList<>(Arrays.asList(arr));
-        } catch (BasicException e) {
+        } catch (InputException e) {
             this.records = new ArrayList<>();
             System.out.println("Zły format dat przy inicjalizacji danych");
         }
@@ -43,7 +44,7 @@ public class RecordRepository {
     }
 
 
-    public void appendRecord(Record record) throws BasicException {
+    public void appendRecord(Record record) {
         records.add(record);
     }
 

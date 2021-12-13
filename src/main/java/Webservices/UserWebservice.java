@@ -1,10 +1,13 @@
 package Webservices;
 
 import Model.Exceptions.BasicException;
+import Model.Exceptions.InputException;
 import Model.Exceptions.NotFoundException;
-import Model.Managers.RecordManager;
 import Model.Managers.UserManager;
 import Model.User;
+import Model.UserType;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -21,23 +24,20 @@ public class UserWebservice {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUsers(){
-        return Response.ok(userManager.getAllUsers()).build();
+    public Response getUsers(@QueryParam("login") String login, @QueryParam("userID") String userID){
+        if (login != null) {
+            return Response.ok(userManager.getUserByLogin(login)).build();
+        } else {
+            return Response.ok(userManager.getAllUsers()).build();
+        }
     }
 
     @GET
-    @Path("login={login}")
+    @Path("{userID}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserByLogin(@PathParam("login") String login){
-        return Response.ok(userManager.getUserByLogin(login)).build();
-    }
-
-    @GET
-    @Path("id={userid}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserById(@PathParam("userid") String userid){
+    public Response getUser(@PathParam("userID") String userID) {
         try {
-            User user = userManager.getUserByID(userid);
+            User user = userManager.getUserByID(userID);
             return Response.ok(user).build();
         } catch (NotFoundException e) {
             return Response.status(404, e.toString()).build();
@@ -48,23 +48,35 @@ public class UserWebservice {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addUser(User user){
-        try {
-            userManager.appendUser(user);
-        } catch (BasicException e) {
-            return Response.status(400, e.toString()).build();
-        }
-        return Response.ok(user).build();
+    public Response addUser(String body) {
+            try {
+                JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
+                String login = jsonBody.get("login").getAsString();
+                if (!login.matches("^[a-z0-9_-]{8,16}$")) {
+                    throw new InputException("Login must be between 8 and 16 characters");
+                }
+
+                UserType type = UserType.valueOf(
+                        jsonBody.get("type").getAsString()
+                );
+
+                User user = new User(login, type);
+                userManager.appendUser(user);
+
+                return Response.status(200).entity(user).build();
+            } catch (NullPointerException | InputException | IllegalArgumentException | IllegalStateException e) {
+                return Response.status(400).entity(e).build();
+            }
     }
 
     @DELETE
-    @Path("id={userid}")
+    @Path("{userID}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteUser(@PathParam("userid") String userid){
+    public Response deleteUser(@PathParam("userID") String userID){
         try {
-            User user = userManager.getUserByID(userid);
-            userManager.removeUser(userid);
+            User user = userManager.getUserByID(userID);
+            userManager.removeUser(userID);
             return Response.ok(user).build();
         } catch (NotFoundException e) {
             return Response.status(404, e.toString()).build();
@@ -74,44 +86,53 @@ public class UserWebservice {
     }
 
     @POST
-    @Path("id={userid}")
+    @Path("{userID}/changeLogin")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response changeUserLogin(User user){
+    public Response changeUserLogin(@PathParam("userID") String userID, String body){
         try {
-            userManager.setUserLogin(user.getUserID().toString(), user.getLogin());
-        } catch (BasicException e) {
+            JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
+
+            String login = jsonBody.get("login").getAsString();
+            if (!login.matches("^[a-z0-9_-]{8,16}$")) {
+                throw new InputException("Login must be between 8 and 16 characters");
+            }
+
+            User user = userManager.getUserByID(userID);
+            userManager.setUserLogin(userID, login);
+
+            return Response.ok(user).build();
+        } catch (NotFoundException | InputException e) {
             return Response.status(400, e.toString()).build();
         }
-        return Response.ok(user).build();
     }
 
     @POST
-    @Path("id={userid}/activate")
+    @Path("{userID}/activate")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response activateUser(@PathParam("userid") String userid){
+    public Response activateUser(@PathParam("userID") String userID){
         try {
-            User user = userManager.getUserByID(userid);
+            User user = userManager.getUserByID(userID);
             user.activate();
             return Response.ok(user).build();
         } catch (NotFoundException e){
             return Response.status(404, e.toString()).build();
-        } catch (BasicException e) {
+        } catch (InputException e) {
             return Response.status(400, e.toString()).build();
         }
     }
 
     @POST
-    @Path("id={userid}/deactivate")
+    @Path("{userID}/deactivate")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deactivateUser(@PathParam("userid") String userid){
+    public Response deactivateUser(@PathParam("userID") String userID){
         try {
-            User user = userManager.getUserByID(userid);
+            User user = userManager.getUserByID(userID);
             user.deactivate();
             return Response.ok(user).build();
         } catch(NotFoundException e){
             return Response.status(404, e.toString()).build();
-        } catch (BasicException e) {
+        } catch (InputException e) {
             return Response.status(400, e.toString()).build();
         }
 
