@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 public class Record {
@@ -16,20 +17,14 @@ public class Record {
 
     private String title;
     private String artist;
-    private Date releaseDate;
+    private LocalDate releaseDate;
 
-    public Record(String title, String artist, String releaseDate) throws InputException {
+    public Record(String title, String artist, String releaseDate) {
         this.isRented = false;
         this.recordID = UUID.randomUUID();
         this.title = title;
         this.artist = artist;
-
-        try {
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
-            this.releaseDate = formatter.parse(releaseDate);
-        } catch (ParseException e) {
-            throw new InputException("Cannot parse date");
-        }
+        this.releaseDate = LocalDate.parse(releaseDate);
     }
 
     public boolean isRented() {
@@ -60,11 +55,11 @@ public class Record {
         return artist;
     }
 
-    public Date getReleaseDate() {
+    public LocalDate getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
+    public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
     }
 
@@ -94,8 +89,7 @@ public class Record {
     }
 
     public void setReleaseDate(String releaseDate) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
-        this.releaseDate = formatter.parse(releaseDate);
+        this.releaseDate = LocalDate.parse(releaseDate);
     }
 
     @Override

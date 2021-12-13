@@ -15,17 +15,7 @@ public class RecordRepository {
     private List<Record> records;
 
     public RecordRepository() {
-        try {
-            Record[] arr = {
-                    new Record("Solar Panic", "Nothing but Lorde", "23-10-2020"),
-                    new Record("Moral Power", "Thieves", "20-08-2021")
-            };
-
-            this.records  =  new ArrayList<>(Arrays.asList(arr));
-        } catch (InputException e) {
-            this.records = new ArrayList<>();
-            System.out.println("Zły format dat przy inicjalizacji danych");
-        }
+        this.records  =  new ArrayList<>();
     }
 
     public List<Record> getAllRecords() {
