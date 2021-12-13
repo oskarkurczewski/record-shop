@@ -24,18 +24,23 @@ public class UserWebservice {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserByLogin(@QueryParam("login") String login, @QueryParam("userid") String userid){
-        if (userid != null) {
-            try {
-                User user = userManager.getUserByID(userid);
-                return Response.ok(user).build();
-            } catch (NotFoundException e) {
-                return Response.status(404, e.toString()).build();
-            }
-        } else if (login != null) {
+    public Response getUsers(@QueryParam("login") String login, @QueryParam("userID") String userID){
+        if (login != null) {
             return Response.ok(userManager.getUserByLogin(login)).build();
         } else {
             return Response.ok(userManager.getAllUsers()).build();
+        }
+    }
+
+    @GET
+    @Path("{userID}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getUser(@PathParam("userID") String userID) {
+        try {
+            User user = userManager.getUserByID(userID);
+            return Response.ok(user).build();
+        } catch (NotFoundException e) {
+            return Response.status(404, e.toString()).build();
         }
     }
 
@@ -65,13 +70,13 @@ public class UserWebservice {
     }
 
     @DELETE
-    @Path("{userid}")
+    @Path("{userID}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteUser(@PathParam("userid") String userid){
+    public Response deleteUser(@PathParam("userID") String userID){
         try {
-            User user = userManager.getUserByID(userid);
-            userManager.removeUser(userid);
+            User user = userManager.getUserByID(userID);
+            userManager.removeUser(userID);
             return Response.ok(user).build();
         } catch (NotFoundException e) {
             return Response.status(404, e.toString()).build();
@@ -81,10 +86,10 @@ public class UserWebservice {
     }
 
     @POST
-    @Path("{userid}/changeLogin")
+    @Path("{userID}/changeLogin")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response changeUserLogin(@PathParam("userid") String userid, String body){
+    public Response changeUserLogin(@PathParam("userID") String userID, String body){
         try {
             JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
 
@@ -93,8 +98,8 @@ public class UserWebservice {
                 throw new InputException("Login must be between 8 and 16 characters");
             }
 
-            User user = userManager.getUserByID(userid);
-            userManager.setUserLogin(userid, login);
+            User user = userManager.getUserByID(userID);
+            userManager.setUserLogin(userID, login);
 
             return Response.ok(user).build();
         } catch (NotFoundException | InputException e) {
@@ -103,11 +108,11 @@ public class UserWebservice {
     }
 
     @POST
-    @Path("{userid}/activate")
+    @Path("{userID}/activate")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response activateUser(@PathParam("userid") String userid){
+    public Response activateUser(@PathParam("userID") String userID){
         try {
-            User user = userManager.getUserByID(userid);
+            User user = userManager.getUserByID(userID);
             user.activate();
             return Response.ok(user).build();
         } catch (NotFoundException e){
@@ -118,11 +123,11 @@ public class UserWebservice {
     }
 
     @POST
-    @Path("{userid}/deactivate")
+    @Path("{userID}/deactivate")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deactivateUser(@PathParam("userid") String userid){
+    public Response deactivateUser(@PathParam("userID") String userID){
         try {
-            User user = userManager.getUserByID(userid);
+            User user = userManager.getUserByID(userID);
             user.deactivate();
             return Response.ok(user).build();
         } catch(NotFoundException e){
