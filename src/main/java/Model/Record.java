@@ -1,6 +1,7 @@
 package Model;
 
 import Model.Exceptions.BasicException;
+import Model.Exceptions.InputException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -21,7 +22,7 @@ public class Record {
         this.recordID = UUID.randomUUID();
     }
 
-    public Record(String title, String artist, String releaseDate) throws BasicException {
+    public Record(String title, String artist, String releaseDate) throws InputException {
         this.isRented = false;
         this.recordID = UUID.randomUUID();
         this.title = title;
@@ -31,7 +32,7 @@ public class Record {
             SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
             this.releaseDate = formatter.parse(releaseDate);
         } catch (ParseException e) {
-            throw new BasicException("Cannot parse date");
+            throw new InputException("Cannot parse date");
         }
 
     }

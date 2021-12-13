@@ -5,6 +5,8 @@ import Model.Exceptions.NotFoundException;
 import Model.User;
 import Model.Record;
 import Model.Managers.*;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -19,14 +21,15 @@ public class RentWebservice {
     UserManager userManager;
 
     @DELETE
-    @Path("/cart/userid={userid},recordid={recordid}")
+    @Path("/cart")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response removeRentFromCart(@PathParam("userid") String userid, @PathParam("recordid") String recordid) throws NotFoundException {
+    public Response removeRentFromCart(String body) {
+
+        JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
         try {
-            User user = userManager.getUserByID(userid);
-            Record record = recordManager.getRecordByID(recordid);
-            user.removeFromCart(record);
+            User user = userManager.getUserByID(jsonBody.get("userid").getAsString());
+            user.removeFromCart(recordManager.getRecordByID(jsonBody.get("recordid").getAsString()));
             return Response.ok(user.getCart()).build();
         } catch (NotFoundException e) {
             return Response.status(404, e.toString()).build();

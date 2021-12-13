@@ -22,26 +22,21 @@ public class UserWebservice {
     @Inject
     private UserManager userManager;
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getUsers(){
-        return Response.ok(userManager.getAllUsers()).build();
-    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserByLogin(@QueryParam("login") String login){
-        return Response.ok(userManager.getUserByLogin(login)).build();
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserById(@QueryParam("userid") String userid){
-        try {
-            User user = userManager.getUserByID(userid);
-            return Response.ok(user).build();
-        } catch (NotFoundException e) {
-            return Response.status(404, e.toString()).build();
+    public Response getUserByLogin(@QueryParam("login") String login, @QueryParam("userid") String userid){
+        if (userid != null) {
+            try {
+                User user = userManager.getUserByID(userid);
+                return Response.ok(user).build();
+            } catch (NotFoundException e) {
+                return Response.status(404, e.toString()).build();
+            }
+        } else if (login != null) {
+            return Response.ok(userManager.getUserByLogin(login)).build();
+        } else {
+            return Response.ok(userManager.getAllUsers()).build();
         }
     }
 
@@ -64,7 +59,7 @@ public class UserWebservice {
                 User user = new User(login, type);
                 userManager.appendUser(user);
 
-                return Response.ok(user).build();
+                return Response.status(200).entity(user).build();
             } catch (NullPointerException | InputException | IllegalArgumentException | IllegalStateException e) {
                 return Response.status(400).entity(e).build();
             }
@@ -86,6 +81,7 @@ public class UserWebservice {
     }
 
     @POST
+    @Path("changeLogin")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response changeUserLogin(@QueryParam("userid") String userid, String body){
@@ -107,9 +103,9 @@ public class UserWebservice {
     }
 
     @POST
-    @Path("id={userid}/activate")
+    @Path("activate")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response activateUser(@PathParam("userid") String userid){
+    public Response activateUser(@QueryParam("userid") String userid){
         try {
             User user = userManager.getUserByID(userid);
             user.activate();
@@ -122,9 +118,9 @@ public class UserWebservice {
     }
 
     @POST
-    @Path("id={userid}/deactivate")
+    @Path("deactivate")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deactivateUser(@PathParam("userid") String userid){
+    public Response deactivateUser(@QueryParam("userid") String userid){
         try {
             User user = userManager.getUserByID(userid);
             user.deactivate();
