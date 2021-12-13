@@ -20,7 +20,7 @@ public class UserManager {
             throw new InputException("This login is already set");
         }
 
-        if (repository.getUserByLogin(newLogin) == null) {
+        if (repository.getUserByLogin(newLogin) != null) {
             throw new InputException("This login already exists");
         }
 
