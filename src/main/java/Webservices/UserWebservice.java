@@ -40,7 +40,7 @@ public class UserWebservice {
             User user = userManager.getUserByID(userID);
             return Response.ok(user).build();
         } catch (NotFoundException e) {
-            return Response.status(404, e.toString()).build();
+            return Response.status(404).entity(e).build();
         }
     }
 
@@ -79,9 +79,9 @@ public class UserWebservice {
             userManager.removeUser(userID);
             return Response.ok(user).build();
         } catch (NotFoundException e) {
-            return Response.status(404, e.toString()).build();
+            return Response.status(404).entity(e).build();
         } catch (BasicException e) {
-            return Response.status(400, e.toString()).build();
+            return Response.status(400).entity(e).build();
         }
     }
 
@@ -103,7 +103,7 @@ public class UserWebservice {
 
             return Response.ok(user).build();
         } catch (NotFoundException | InputException e) {
-            return Response.status(400, e.toString()).build();
+            return Response.status(400).entity(e).build();
         }
     }
 
@@ -116,9 +116,9 @@ public class UserWebservice {
             user.activate();
             return Response.ok(user).build();
         } catch (NotFoundException e){
-            return Response.status(404, e.toString()).build();
+            return Response.status(404).entity(e).build();
         } catch (InputException e) {
-            return Response.status(400, e.toString()).build();
+            return Response.status(400).entity(e).build();
         }
     }
 
@@ -131,9 +131,9 @@ public class UserWebservice {
             user.deactivate();
             return Response.ok(user).build();
         } catch(NotFoundException e){
-            return Response.status(404, e.toString()).build();
+            return Response.status(404).entity(e).build();
         } catch (InputException e) {
-            return Response.status(400, e.toString()).build();
+            return Response.status(400).entity(e).build();
         }
 
     }

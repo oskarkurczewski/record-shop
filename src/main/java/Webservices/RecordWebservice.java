@@ -32,7 +32,7 @@ public class RecordWebservice {
                 Record recordFound = recordManager.getRecordByID(recordid);
                 return Response.ok(recordFound).build();
             } catch (NotFoundException e) {
-                return Response.status(404, e.toString()).build();
+                return Response.status(404).entity(e).build();
             }
         } else {
             return Response.ok(recordManager.getAllRecords()).build();
@@ -63,7 +63,7 @@ public class RecordWebservice {
             recordManager.appendRecord(record);
             return Response.status(201).entity(record).build();
         } catch (InputException e) {
-            return Response.status(400, e.toString()).build();
+            return Response.status(400).entity(e).build();
         }
     }
 
@@ -76,9 +76,9 @@ public class RecordWebservice {
             recordManager.removeRecord(recordid);
             return Response.ok(record).build();
         } catch (RentalException e) {
-            return Response.status(400, e.toString()).build();
+            return Response.status(400).entity(e).build();
         } catch (NotFoundException e) {
-            return Response.status(404, e.toString()).build();
+            return Response.status(404).entity(e).build();
         }
     }
 
@@ -124,9 +124,9 @@ public class RecordWebservice {
 
             return Response.status(200).entity(record).build();
         } catch (InputException | ParseException e) {
-            return Response.status(400, e.toString()).build();
+            return Response.status(400).entity(e).build();
         } catch (NotFoundException e) {
-            return Response.status(404, e.toString()).build();
+            return Response.status(404).entity(e).build();
         }
     }
 }
