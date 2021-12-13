@@ -84,7 +84,13 @@ public class RentWebservice {
             user.clearCart();
             return Response.ok(user.getCart()).build();
         } catch (NotFoundException e) {
+<<<<<<< HEAD
             return Response.status(404).entity(e).build();
+=======
+            return Response.status(404, e.toString()).build();
+        } catch (RentalException e) {
+            return Response.status(400, e.toString()).build();
+>>>>>>> 9ad8640187e059ae35e55a2676cbafb0da78f067
         }
     }
 
