@@ -31,7 +31,7 @@ public class UserRepository {
 
     public User getUserByID(String userid) throws NotFoundException {
         User user = users.stream()
-                .filter( u -> userid.equals(u.getUserID().toString()))
+                .filter( u -> u.getUserID().equals(userid))
                 .findFirst()
                 .orElse(null);
         if (user == null) {
@@ -42,14 +42,14 @@ public class UserRepository {
 
     public User getUserByLogin(String login) {
         return users.stream()
-                .filter( user -> login.equals(user.getLogin()))
+                .filter( user -> user.getLogin().equals(login))
                 .findFirst()
                 .orElse(null);
     }
 
     public List<User> getUsersByLogin(String login) {
         return users.stream()
-                .filter( user -> login.contains(user.getLogin()))
+                .filter( user -> user.getLogin().contains(login))
                 .collect(Collectors.toList());
     }
 
