@@ -1,9 +1,7 @@
 package Model.Repositories;
 
 import Model.*;
-import Model.Exceptions.BasicException;
-import Model.Exceptions.InputException;
-import Model.Exceptions.NotFoundException;
+import Model.Exceptions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,4 +65,9 @@ public class UserRepository {
         users.remove(user);
     }
 
+    public void extendRentReturnDays(String renterId, String userId, int days) throws PermissionException, RentalException, NotFoundException {
+       User renter = this.getUserByID(renterId);
+       User user = this.getUserByID(userId);
+       user.extendRentReturnDays(renter, days);
+    }
 }

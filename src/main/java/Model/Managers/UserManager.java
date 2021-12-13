@@ -1,8 +1,6 @@
 package Model.Managers;
 
-import Model.Exceptions.BasicException;
-import Model.Exceptions.InputException;
-import Model.Exceptions.NotFoundException;
+import Model.Exceptions.*;
 import Model.Repositories.UserRepository;
 import Model.User;
 
@@ -38,6 +36,11 @@ public class UserManager {
     public User getUserByLogin(String login) {
         return repository.getUserByLogin(login);
     }
+
+    public void extendRentReturnDays(String renterId, String userId, int days) throws RentalException, PermissionException, NotFoundException {
+        repository.extendRentReturnDays(renterId, userId, days);
+    }
+
 
     public List<User> getUsersByLogin(String login) {
         return repository.getUsersByLogin(login);

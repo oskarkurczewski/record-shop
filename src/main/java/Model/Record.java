@@ -73,7 +73,7 @@ public class Record {
             throw new InputException("Record already rented");
         }
         this.isRented = true;
-        this.currentRent = rental;
+//        this.currentRent = rental;
     }
 
     public void release() throws InputException {
