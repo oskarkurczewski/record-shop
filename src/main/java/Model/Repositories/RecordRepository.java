@@ -6,7 +6,6 @@ import Model.Exceptions.NotFoundException;
 import Model.Exceptions.RentalException;
 import Model.Record;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
