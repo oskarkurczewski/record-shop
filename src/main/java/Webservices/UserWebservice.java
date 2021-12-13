@@ -26,7 +26,7 @@ public class UserWebservice {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers(@QueryParam("login") String login, @QueryParam("userID") String userID){
         if (login != null) {
-            return Response.ok(userManager.getUserByLogin(login)).build();
+            return Response.ok(userManager.getUsersByLogin(login)).build();
         } else {
             return Response.ok(userManager.getAllUsers()).build();
         }
