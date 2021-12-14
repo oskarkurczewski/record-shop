@@ -1,12 +1,12 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
-import org.json.simple.parser.JSONParser;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +19,7 @@ public class UserTests {
 
     final static String ROOT_URI = "http://localhost:8080/record-shop-1.0-SNAPSHOT/record-shop/users";
     final private Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
+
 
     @Test
     public void testCreateAndGetByID() {

@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 
 public class RecordTests {
 
@@ -208,12 +208,12 @@ public class RecordTests {
                         .body(gsonBuilder.toJson(modifiedRecordData))
                         .when()
                         .post(ROOT_URI + "/" + recordID + "/edit").then().assertThat()
-                            .statusCode(HttpStatus.SC_OK)
-                            .body("recordID", is(recordID))
-                            .body("artist", is(modifiedRecordData.get("artist")))
-                            .body("releaseDate", is(modifiedRecordData.get("releaseDate")))
-                            .body("rented", is(modifiedRecordData.get("rented")))
-                            .body("title", is(modifiedRecordData.get("title")));
+                        .statusCode(HttpStatus.SC_OK)
+                        .body("recordID", is(recordID))
+                        .body("artist", is(modifiedRecordData.get("artist")))
+                        .body("releaseDate", is(modifiedRecordData.get("releaseDate")))
+                        .body("rented", is(modifiedRecordData.get("rented")))
+                        .body("title", is(modifiedRecordData.get("title")));
 
                 get(ROOT_URI + "/" + recordID).then().assertThat()
                         .statusCode(HttpStatus.SC_OK)
