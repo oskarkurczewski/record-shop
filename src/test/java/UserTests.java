@@ -5,6 +5,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 import org.json.simple.parser.JSONParser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.hasItems;
@@ -13,13 +18,20 @@ import static org.hamcrest.Matchers.is;
 public class UserTests {
 
     final static String ROOT_URI = "http://localhost:8080/record-shop-1.0-SNAPSHOT/record-shop/users";
+    final private Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
 
     @Test
     public void testCreateAndGetByID() {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("login", "janet12345");
+        userMap.put("type", "CLIENT");
+
+        System.out.println(gsonBuilder.toJson(userMap));
+
         Response postResponse = given().
                 contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body("{\"login\": \"janet12345\", \"type\": \"CLIENT\"}")
+                .body(gsonBuilder.toJson(userMap))
                 .when()
                 .post(ROOT_URI);
         try {
@@ -30,15 +42,15 @@ public class UserTests {
 
             postResponse.then().assertThat()
                     .statusCode(HttpStatus.SC_OK)
-                    .body("login", is("janet12345"))
-                    .body("type", is("CLIENT"));
+                    .body("login", is(userMap.get("login")))
+                    .body("type", is(userMap.get("type")));
 
             try {
                 Response getResponse = get(ROOT_URI + "/" + userID);
 
                 getResponse.then()
-                        .body("login", is("janet12345"))
-                        .body("type", is("CLIENT"))
+                        .body("login", is(userMap.get("login")))
+                        .body("type", is(userMap.get("type")))
                         .body("userID", is(userID));
             } finally {
                 delete(ROOT_URI + "/" + userID);
@@ -50,42 +62,50 @@ public class UserTests {
 
     @Test
     public void testGetUserByLogin() {
-        Response firstPOSTResponse = given().
+        Map<String, Object> firstUser = new HashMap<>();
+        firstUser.put("login", "janet1234");
+        firstUser.put("type", "CLIENT");
+
+        Map<String, Object> secondUser = new HashMap<>();
+        secondUser.put("login", "janet5678");
+        secondUser.put("type", "RENTER");
+
+        Response firstCreateResponse = given().
                 contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body("{\"login\": \"janet1234\", \"type\": \"CLIENT\"}")
+                .body(gsonBuilder.toJson(firstUser))
                 .when()
                 .post(ROOT_URI);
 
-        Response secondPOSTResponse = given().
+        Response secondCreateResponse = given().
                 contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body("{\"login\": \"janet5678\", \"type\": \"RENTER\"}")
+                .body(gsonBuilder.toJson(secondUser))
                 .when()
                 .post(ROOT_URI);
 
         try {
-            JSONObject firstPOSTJSON = (JSONObject) new JSONParser().parse(firstPOSTResponse.asString());
-            JSONObject secondPOSTJSON = (JSONObject) new JSONParser().parse(secondPOSTResponse.asString());
+            JSONObject firstCreateJSON = (JSONObject) new JSONParser().parse(firstCreateResponse.asString());
+            JSONObject secondCreateJSON = (JSONObject) new JSONParser().parse(secondCreateResponse.asString());
 
-            String firstUserID = (String) firstPOSTJSON.get("userID");
-            String secondUserID = (String) secondPOSTJSON.get("userID");
+            String firstUserID = (String) firstCreateJSON.get("userID");
+            String secondUserID = (String) secondCreateJSON.get("userID");
 
             try {
-                firstPOSTResponse.then().assertThat()
+                firstCreateResponse.then().assertThat()
                         .statusCode(HttpStatus.SC_OK)
-                        .body("login", is("janet1234"))
-                        .body("type", is("CLIENT"));
+                        .body("login", is(firstUser.get("login")))
+                        .body("type", is(firstUser.get("type")));
 
-                secondPOSTResponse.then().assertThat()
+                secondCreateResponse.then().assertThat()
                         .statusCode(HttpStatus.SC_OK)
-                        .body("login", is("janet5678"))
-                        .body("type", is("RENTER"));
+                        .body("login", is(secondUser.get("login")))
+                        .body("type", is(secondUser.get("type")));
 
                 Response getResponse = get(ROOT_URI + "?login=janet");
                 getResponse.then()
-                        .body("login", hasItems("janet1234", "janet5678"))
-                        .body("type", hasItems("RENTER", "CLIENT"))
+                        .body("login", hasItems(firstUser.get("login"), secondUser.get("login")))
+                        .body("type", hasItems(firstUser.get("type"), secondUser.get("type")))
                         .body("userID", hasItems(firstUserID, secondUserID));
 
             } finally {
@@ -99,34 +119,40 @@ public class UserTests {
 
     @Test
     public void testUpdateLogin() {
-        Response CreateResponse = given()
+        Map<String, Object> user = new HashMap<>();
+        user.put("login", "janet1234");
+        user.put("type", "CLIENT");
+
+        Response createResponse = given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
-                .body("{\"login\": \"janet1234\", \"type\": \"CLIENT\"}")
+                .body(gsonBuilder.toJson(user))
                 .when()
                 .post(ROOT_URI);
 
         try {
-            JSONObject POSTJson = (JSONObject) new JSONParser().parse(CreateResponse.asString());
+            JSONObject POSTJson = (JSONObject) new JSONParser().parse(createResponse.asString());
             String userID = (String) POSTJson.get("userID");
 
             try {
-                CreateResponse.then().assertThat()
+                createResponse.then().assertThat()
                         .statusCode(HttpStatus.SC_OK)
-                        .body("login", is("janet1234"))
-                        .body("type", is("CLIENT"));
+                        .body("login", is(user.get("login")))
+                        .body("type", is(user.get("type")));
+
+                String newLogin = "janet5678";
 
                 Response UpdateResponse = given()
                         .contentType(ContentType.JSON)
                         .accept(ContentType.JSON)
-                        .body("{\"login\": \"janet5678\"}")
+                        .body("{\"login\": \"" + newLogin + "\"}")
                         .when()
                         .post(ROOT_URI + "/" + userID + "/changeLogin");
 
                 UpdateResponse.then().assertThat()
                         .statusCode(HttpStatus.SC_OK)
-                        .body("login", is("janet5678"))
-                        .body("type", is("CLIENT"));
+                        .body("login", is(newLogin))
+                        .body("type", is(user.get("type")));
 
             } finally {
                 delete(ROOT_URI + "/" + userID);
@@ -134,6 +160,14 @@ public class UserTests {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testGetUserWrongID() {
+        String wrongID = "b3a1a7e3-e8c5-4426-837e-717528282664";
+
+        get(ROOT_URI + "/" + wrongID).then().assertThat()
+                .statusCode(HttpStatus.SC_NOT_FOUND);
     }
 
 }
