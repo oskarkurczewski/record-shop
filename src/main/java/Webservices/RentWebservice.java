@@ -40,11 +40,13 @@ public class RentWebservice {
     }
 
     @POST
-    @Path("{userID}/cart/{recordID}")
+    @Path("{userID}/cart")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response addRentToCart(@PathParam("userID") String userID, @PathParam("recordID") String recordID) {
+    public Response addRentToCart(@PathParam("userID") String userID, String body) {
         try {
+            JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
+            String recordID = jsonBody.get("recordID").getAsString();
             User user = userManager.getUserByID(userID);
             user.addToCart(recordManager.getRecordByID(recordID));
             return Response.ok(user.getCart()).build();
@@ -109,7 +111,7 @@ public class RentWebservice {
         JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
         try {
             User user = userManager.getUserByID(userID);
-            User renter = userManager.getUserByID(jsonBody.get("renterid").getAsString());
+            User renter = userManager.getUserByID(jsonBody.get("renterID").getAsString());
             user.rentCart(renter);
             return Response.ok(user.getRentals()).build();
         } catch (NotFoundException e) {
@@ -130,7 +132,7 @@ public class RentWebservice {
         JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
         try {
             User user = userManager.getUserByID(userID);
-            User renter = userManager.getUserByID(jsonBody.get("renterid").getAsString());
+            User renter = userManager.getUserByID(jsonBody.get("renterID").getAsString());
             user.clearRentals(renter);
             return Response.ok(user.getRentals()).build();
         } catch (NotFoundException e) {
@@ -151,7 +153,7 @@ public class RentWebservice {
         JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
         try {
             User user = userManager.getUserByID(userID);
-            String renter = jsonBody.get("renterid").getAsString();
+            String renter = jsonBody.get("renterID").getAsString();
             int days = Integer.parseInt(jsonBody.get("days").toString());
 
             userManager.extendRentReturnDays(renter, userID, days);
