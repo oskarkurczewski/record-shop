@@ -211,4 +211,44 @@ public class RentalsTest {
                 .then().assertThat()
                 .body("recordID", not(hasItem(rent.get("recordID"))));
     }
+
+    @Test
+    public void testRentAlreadyRentedRecord() {
+        try {
+            given()
+                    .contentType(ContentType.JSON)
+                    .accept(ContentType.JSON)
+                    .body("{" + "\"renterID\": " + "\"" + renterID + "\"" + "}")
+                    .when()
+                    .post(RENTS_URI + "/" + rent.get("userID") + "/rentals")
+                    .then().assertThat()
+                    .statusCode(HttpStatus.SC_OK)
+                    .body("recordID", hasItem(rent.get("recordID")));
+
+            get(RENTS_URI + "/" + rent.get("userID") + "/rentals")
+                    .then().assertThat()
+                    .body("recordID", hasItem(rent.get("recordID")));
+
+            Map<String, Object> secondRent = new HashMap<String, Object>();
+            secondRent.put("userID", clientID);
+            secondRent.put("recordID", firstRecordID);
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .accept(ContentType.JSON)
+                    .body("{" + "\"recordID\": " +  "\"" + secondRent.get("recordID") + "\"" + "}")
+                    .when()
+                    .post(RENTS_URI + "/" + secondRent.get("userID") + "/cart")
+                    .then().assertThat()
+                            .statusCode(HttpStatus.SC_BAD_REQUEST);
+
+        } finally {
+            given()
+                    .contentType(ContentType.JSON)
+                    .accept(ContentType.JSON)
+                    .body("{" + "\"renterID\": " + "\"" + renterID + "\"" + "}")
+                    .when()
+                    .post(RENTS_URI + "/" + rent.get("userID") + "/rentals/clear");
+        }
+    }
 }
