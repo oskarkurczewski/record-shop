@@ -171,4 +171,183 @@ public class UserTests {
                 .statusCode(HttpStatus.SC_NOT_FOUND);
     }
 
+    @Test
+    public void testCreateUserWithLoginTooShort() {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("login", "abcdefg");
+        userMap.put("type", "CLIENT");
+
+        System.out.println(gsonBuilder.toJson(userMap));
+
+        given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(userMap))
+                .when()
+                .post(ROOT_URI)
+                .then().assertThat()
+                        .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    @Test
+    public void testCreateUserWithLoginTooLong() {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("login", "abcdefghijklmnopq");
+        userMap.put("type", "CLIENT");
+
+        System.out.println(gsonBuilder.toJson(userMap));
+
+        given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(userMap))
+                .when()
+                .post(ROOT_URI)
+                .then().assertThat()
+                .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    @Test
+    public void testCreateUserWithLoginContainingInvalidCharacters() {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("login", "janet12345#");
+        userMap.put("type", "CLIENT");
+
+        System.out.println(gsonBuilder.toJson(userMap));
+
+        given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(userMap))
+                .when()
+                .post(ROOT_URI)
+                .then().assertThat()
+                .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    @Test
+    public void testModifyUserWithLoginContainingInvalidCharacters() {
+        Map<String, Object> user = new HashMap<>();
+        user.put("login", "janet1234");
+        user.put("type", "CLIENT");
+
+        Response createResponse = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(user))
+                .when()
+                .post(ROOT_URI);
+
+        try {
+            JSONObject POSTJson = (JSONObject) new JSONParser().parse(createResponse.asString());
+            String userID = (String) POSTJson.get("userID");
+
+            try {
+                createResponse.then().assertThat()
+                        .statusCode(HttpStatus.SC_OK)
+                        .body("login", is(user.get("login")))
+                        .body("type", is(user.get("type")));
+
+                String newLogin = "janet12345#";
+
+                given()
+                        .contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .body("{\"login\": \"" + newLogin + "\"}")
+                        .when()
+                        .post(ROOT_URI + "/" + userID + "/changeLogin")
+                        .then().assertThat()
+                                .statusCode(HttpStatus.SC_BAD_REQUEST);
+
+            } finally {
+                delete(ROOT_URI + "/" + userID);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testModifyUserWithLoginTooShort() {
+        Map<String, Object> user = new HashMap<>();
+        user.put("login", "janet1234");
+        user.put("type", "CLIENT");
+
+        Response createResponse = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(user))
+                .when()
+                .post(ROOT_URI);
+
+        try {
+            JSONObject POSTJson = (JSONObject) new JSONParser().parse(createResponse.asString());
+            String userID = (String) POSTJson.get("userID");
+
+            try {
+                createResponse.then().assertThat()
+                        .statusCode(HttpStatus.SC_OK)
+                        .body("login", is(user.get("login")))
+                        .body("type", is(user.get("type")));
+
+                String newLogin = "abcd";
+
+                given()
+                        .contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .body("{\"login\": \"" + newLogin + "\"}")
+                        .when()
+                        .post(ROOT_URI + "/" + userID + "/changeLogin")
+                        .then().assertThat()
+                        .statusCode(HttpStatus.SC_BAD_REQUEST);
+
+            } finally {
+                delete(ROOT_URI + "/" + userID);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testModifyUserWithLoginTooLong() {
+        Map<String, Object> user = new HashMap<>();
+        user.put("login", "janet1234");
+        user.put("type", "CLIENT");
+
+        Response createResponse = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(user))
+                .when()
+                .post(ROOT_URI);
+
+        try {
+            JSONObject POSTJson = (JSONObject) new JSONParser().parse(createResponse.asString());
+            String userID = (String) POSTJson.get("userID");
+
+            try {
+                createResponse.then().assertThat()
+                        .statusCode(HttpStatus.SC_OK)
+                        .body("login", is(user.get("login")))
+                        .body("type", is(user.get("type")));
+
+                String newLogin = "abcdefghijklmnopq";
+
+                given()
+                        .contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .body("{\"login\": \"" + newLogin + "\"}")
+                        .when()
+                        .post(ROOT_URI + "/" + userID + "/changeLogin")
+                        .then().assertThat()
+                        .statusCode(HttpStatus.SC_BAD_REQUEST);
+
+            } finally {
+                delete(ROOT_URI + "/" + userID);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 }
