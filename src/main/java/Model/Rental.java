@@ -4,6 +4,7 @@ import Model.Exceptions.InputException;
 import Model.Exceptions.PermissionException;
 import Model.Exceptions.RentalException;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -16,9 +17,9 @@ public class Rental {
     private transient final User renter;
     private transient final Record record;
 
-    private final Date rentDate;
-    private Date expectedReturnDate;
-    private Date actualReturnDate;
+    private final LocalDateTime rentDate;
+    private LocalDateTime expectedReturnDate;
+    private LocalDateTime actualReturnDate;
 
     public Rental(User client, User renter, Record record) throws PermissionException, InputException {
         if (renter.getType() != UserType.RENTER) {
@@ -33,12 +34,10 @@ public class Rental {
         this.renter = renter;
         this.record = record;
 
-        this.rentDate = new Date();
+        this.rentDate = LocalDateTime.now();
         this.record.rent(this);
 
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_MONTH, 7);
-        this.expectedReturnDate = cal.getTime();
+        this.expectedReturnDate = this.rentDate.plusDays(7);
     }
 
         public User getClient() {
@@ -61,11 +60,11 @@ public class Rental {
         return recordID;
     }
 
-    public Date getRentDate() {
+    public LocalDateTime getRentDate() {
         return rentDate;
     }
 
-    public Date getExpectedReturnDate() {
+    public LocalDateTime getExpectedReturnDate() {
         return expectedReturnDate;
     }
 
@@ -73,14 +72,14 @@ public class Rental {
         return record;
     }
 
-    public Date getActualReturnDate() {
+    public LocalDateTime getActualReturnDate() {
         return actualReturnDate;
     }
 
     public int callCops() { return 997; }
 
     public void returnRecord() throws InputException {
-        this.actualReturnDate = new Date();
+        this.actualReturnDate = LocalDateTime.now();
         this.record.release();
     }
 
@@ -88,11 +87,8 @@ public class Rental {
         if (days <= 0) {
             throw new RentalException("Wrong number of days");
         }
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(this.expectedReturnDate);
-        cal.add(Calendar.DAY_OF_MONTH, days);
 
-        this.expectedReturnDate = cal.getTime();
+        this.expectedReturnDate = expectedReturnDate.plusDays(days);
     }
 
 
