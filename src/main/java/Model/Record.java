@@ -5,7 +5,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -68,7 +67,7 @@ public class Record {
             throw new InputException("Record already rented");
         }
         this.isRented = true;
-//        this.currentRent = rental;
+        this.currentRent = rental;
     }
 
     public void release() throws InputException {

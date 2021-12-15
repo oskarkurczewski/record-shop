@@ -5,6 +5,7 @@ import Model.Exceptions.RentalException;
 import Model.Record;
 import Model.Repositories.RecordRepository;
 
+import java.text.ParseException;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -22,12 +23,26 @@ public class RecordManager {
         return repository.getAllRecords();
     }
 
-    public void appendRecord(Record record){
+    public synchronized void appendRecord(Record record){
         repository.appendRecord(record);
     }
 
-    public void removeRecord(String recordid) throws RentalException, NotFoundException {
+    public synchronized void removeRecord(String recordid) throws RentalException, NotFoundException {
         repository.removeRecord(recordid);
+    }
+
+    public synchronized void modifyRecord(Record record, String title, String artist, String releaseDate) throws ParseException {
+        if (title.length() > 0) {
+            record.setTitle(title);
+        }
+
+        if (artist.length() > 0) {
+            record.setArtist(artist);
+        }
+
+        if (releaseDate.length() > 0) {
+            record.setReleaseDate(releaseDate);
+        }
     }
 
 }
