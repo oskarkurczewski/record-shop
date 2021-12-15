@@ -239,5 +239,419 @@ public class RecordTests {
                 .statusCode(HttpStatus.SC_NOT_FOUND);
     }
 
+    // Creation Artist Input Validation Tests
 
+    @Test
+    public void testCreateRecordWithArtistTooShort() {
+        Map<String, Object> record = new HashMap<>();
+        record.put("artist", "aa");
+        record.put("releaseDate", "2005-06-25");
+        record.put("title", "The Joy Of Motion");
+        record.put("rented", false);
+
+        given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(record))
+                .when()
+                .post(ROOT_URI)
+                .then().assertThat()
+                        .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    @Test
+    public void testCreateRecordWithArtistTooLong() {
+        Map<String, Object> record = new HashMap<>();
+        record.put("artist", "ThisArtistEndsUpBeingFiftyOneCharactersLongInTheEnd");
+        record.put("releaseDate", "2005-06-25");
+        record.put("title", "The Joy Of Motion");
+        record.put("rented", false);
+
+        given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(record))
+                .when()
+                .post(ROOT_URI)
+                .then().assertThat()
+                .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    @Test
+    public void testCreateRecordWithArtistWithInvalidCharacters() {
+        Map<String, Object> record = new HashMap<>();
+        record.put("artist", "Artist#");
+        record.put("releaseDate", "2005-06-25");
+        record.put("title", "The Joy Of Motion");
+        record.put("rented", false);
+
+        given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(record))
+                .when()
+                .post(ROOT_URI)
+                .then().assertThat()
+                .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    // Creation Title Input Validation Tests
+
+    @Test
+    public void testCreateRecordWithTitleTooShort() {
+        Map<String, Object> record = new HashMap<>();
+        record.put("artist", "Animals As Leaders");
+        record.put("releaseDate", "2005-06-25");
+        record.put("title", "ab");
+        record.put("rented", false);
+
+        given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(record))
+                .when()
+                .post(ROOT_URI)
+                .then().assertThat()
+                .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    @Test
+    public void testCreateRecordWithTitleTooLong() {
+        Map<String, Object> record = new HashMap<>();
+        record.put("artist", "Animals As Leaders");
+        record.put("releaseDate", "2005-06-25");
+        record.put("title", "ThisTitleAlsoEndsUpFiftyOneCharactersLongThatsMagic");
+        record.put("rented", false);
+
+        given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(record))
+                .when()
+                .post(ROOT_URI)
+                .then().assertThat()
+                .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    @Test
+    public void testCreateRecordWithTitleWithInvalidCharacters() {
+        Map<String, Object> record = new HashMap<>();
+        record.put("artist", "Animals As Leaders");
+        record.put("releaseDate", "2005-06-25");
+        record.put("title", "Title#");
+        record.put("rented", false);
+
+        given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(record))
+                .when()
+                .post(ROOT_URI)
+                .then().assertThat()
+                .statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
+
+    // Modification Artist Input Validation Tests
+
+    @Test
+    public void testModifyRecordWithArtistTooShort() {
+        Map<String, Object> record = new HashMap<>();
+        record.put("artist", "Animals As Leaders");
+        record.put("releaseDate", "2005-06-25");
+        record.put("title", "The Joy Of Motion");
+        record.put("rented", false);
+
+        Response createResponse = given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(record))
+                .when()
+                .post(ROOT_URI);
+
+        try {
+            JSONObject postJSON = (JSONObject) new JSONParser().parse(createResponse.asString());
+            String recordID = (String) postJSON.get("recordID");
+
+            createResponse.then().assertThat()
+                    .statusCode(HttpStatus.SC_CREATED)
+                    .body("artist", is(record.get("artist")))
+                    .body("releaseDate", is(record.get("releaseDate")))
+                    .body("rented", is(record.get("rented")))
+                    .body("title", is(record.get("title")));
+
+            try {
+
+                Map<String, Object> modifiedRecordData = new HashMap<>();
+                modifiedRecordData.put("artist", "ab");
+                modifiedRecordData.put("releaseDate", "2005-06-25");
+                modifiedRecordData.put("title", "The Joy Of Motion");
+                modifiedRecordData.put("rented", false);
+
+                given().
+                        contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .body(gsonBuilder.toJson(modifiedRecordData))
+                        .when()
+                        .post(ROOT_URI + "/" + recordID + "/edit").then().assertThat()
+                        .statusCode(HttpStatus.SC_BAD_REQUEST);
+            } finally {
+                delete(ROOT_URI + "/" + recordID);
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testModifyRecordWithArtistTooLong() {
+        Map<String, Object> record = new HashMap<>();
+        record.put("artist", "Animals As Leaders");
+        record.put("releaseDate", "2005-06-25");
+        record.put("title", "The Joy Of Motion");
+        record.put("rented", false);
+
+        Response createResponse = given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(record))
+                .when()
+                .post(ROOT_URI);
+
+        try {
+            JSONObject postJSON = (JSONObject) new JSONParser().parse(createResponse.asString());
+            String recordID = (String) postJSON.get("recordID");
+
+            createResponse.then().assertThat()
+                    .statusCode(HttpStatus.SC_CREATED)
+                    .body("artist", is(record.get("artist")))
+                    .body("releaseDate", is(record.get("releaseDate")))
+                    .body("rented", is(record.get("rented")))
+                    .body("title", is(record.get("title")));
+
+            try {
+
+                Map<String, Object> modifiedRecordData = new HashMap<>();
+                modifiedRecordData.put("artist", "ThisArtistEndsUpBeingFiftyOneCharactersLongInTheEnd");
+                modifiedRecordData.put("releaseDate", "2005-06-25");
+                modifiedRecordData.put("title", "The Joy Of Motion");
+                modifiedRecordData.put("rented", false);
+
+                given().
+                        contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .body(gsonBuilder.toJson(modifiedRecordData))
+                        .when()
+                        .post(ROOT_URI + "/" + recordID + "/edit").then().assertThat()
+                        .statusCode(HttpStatus.SC_BAD_REQUEST);
+            } finally {
+                delete(ROOT_URI + "/" + recordID);
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testModifyRecordWithArtistWithInvalidCharacters() {
+        Map<String, Object> record = new HashMap<>();
+        record.put("artist", "Animals As Leaders");
+        record.put("releaseDate", "2005-06-25");
+        record.put("title", "The Joy Of Motion");
+        record.put("rented", false);
+
+        Response createResponse = given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(record))
+                .when()
+                .post(ROOT_URI);
+
+        try {
+            JSONObject postJSON = (JSONObject) new JSONParser().parse(createResponse.asString());
+            String recordID = (String) postJSON.get("recordID");
+
+            createResponse.then().assertThat()
+                    .statusCode(HttpStatus.SC_CREATED)
+                    .body("artist", is(record.get("artist")))
+                    .body("releaseDate", is(record.get("releaseDate")))
+                    .body("rented", is(record.get("rented")))
+                    .body("title", is(record.get("title")));
+
+            try {
+
+                Map<String, Object> modifiedRecordData = new HashMap<>();
+                modifiedRecordData.put("artist", "Artist#");
+                modifiedRecordData.put("releaseDate", "2005-06-25");
+                modifiedRecordData.put("title", "The Joy Of Motion");
+                modifiedRecordData.put("rented", false);
+
+                given().
+                        contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .body(gsonBuilder.toJson(modifiedRecordData))
+                        .when()
+                        .post(ROOT_URI + "/" + recordID + "/edit").then().assertThat()
+                        .statusCode(HttpStatus.SC_BAD_REQUEST);
+            } finally {
+                delete(ROOT_URI + "/" + recordID);
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Modification Title Input Validation Tests
+
+    @Test
+    public void testModifyRecordWithTitleTooShort() {
+        Map<String, Object> record = new HashMap<>();
+        record.put("artist", "Animals As Leaders");
+        record.put("releaseDate", "2005-06-25");
+        record.put("title", "The Joy Of Motion");
+        record.put("rented", false);
+
+        Response createResponse = given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(record))
+                .when()
+                .post(ROOT_URI);
+
+        try {
+            JSONObject postJSON = (JSONObject) new JSONParser().parse(createResponse.asString());
+            String recordID = (String) postJSON.get("recordID");
+
+            createResponse.then().assertThat()
+                    .statusCode(HttpStatus.SC_CREATED)
+                    .body("artist", is(record.get("artist")))
+                    .body("releaseDate", is(record.get("releaseDate")))
+                    .body("rented", is(record.get("rented")))
+                    .body("title", is(record.get("title")));
+
+            try {
+
+                Map<String, Object> modifiedRecordData = new HashMap<>();
+                modifiedRecordData.put("artist", "Animals As Leaders");
+                modifiedRecordData.put("releaseDate", "2005-06-25");
+                modifiedRecordData.put("title", "ab");
+                modifiedRecordData.put("rented", false);
+
+                given().
+                        contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .body(gsonBuilder.toJson(modifiedRecordData))
+                        .when()
+                        .post(ROOT_URI + "/" + recordID + "/edit").then().assertThat()
+                        .statusCode(HttpStatus.SC_BAD_REQUEST);
+            } finally {
+                delete(ROOT_URI + "/" + recordID);
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testModifyRecordWithTitleTooLong() {
+        Map<String, Object> record = new HashMap<>();
+        record.put("artist", "Animals As Leaders");
+        record.put("releaseDate", "2005-06-25");
+        record.put("title", "The Joy Of Motion");
+        record.put("rented", false);
+
+        Response createResponse = given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(record))
+                .when()
+                .post(ROOT_URI);
+
+        try {
+            JSONObject postJSON = (JSONObject) new JSONParser().parse(createResponse.asString());
+            String recordID = (String) postJSON.get("recordID");
+
+            createResponse.then().assertThat()
+                    .statusCode(HttpStatus.SC_CREATED)
+                    .body("artist", is(record.get("artist")))
+                    .body("releaseDate", is(record.get("releaseDate")))
+                    .body("rented", is(record.get("rented")))
+                    .body("title", is(record.get("title")));
+
+            try {
+
+                Map<String, Object> modifiedRecordData = new HashMap<>();
+                modifiedRecordData.put("artist", "Animals As Leaders");
+                modifiedRecordData.put("releaseDate", "2005-06-25");
+                modifiedRecordData.put("title", "ThisTitleAlsoEndsUpFiftyOneCharactersLongThatsMagic");
+                modifiedRecordData.put("rented", false);
+
+                given().
+                        contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .body(gsonBuilder.toJson(modifiedRecordData))
+                        .when()
+                        .post(ROOT_URI + "/" + recordID + "/edit").then().assertThat()
+                        .statusCode(HttpStatus.SC_BAD_REQUEST);
+            } finally {
+                delete(ROOT_URI + "/" + recordID);
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testModifyRecordWithTitleWithInvalidCharacters() {
+        Map<String, Object> record = new HashMap<>();
+        record.put("artist", "Animals As Leaders");
+        record.put("releaseDate", "2005-06-25");
+        record.put("title", "The Joy Of Motion");
+        record.put("rented", false);
+
+        Response createResponse = given().
+                contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(record))
+                .when()
+                .post(ROOT_URI);
+
+        try {
+            JSONObject postJSON = (JSONObject) new JSONParser().parse(createResponse.asString());
+            String recordID = (String) postJSON.get("recordID");
+
+            createResponse.then().assertThat()
+                    .statusCode(HttpStatus.SC_CREATED)
+                    .body("artist", is(record.get("artist")))
+                    .body("releaseDate", is(record.get("releaseDate")))
+                    .body("rented", is(record.get("rented")))
+                    .body("title", is(record.get("title")));
+
+            try {
+
+                Map<String, Object> modifiedRecordData = new HashMap<>();
+                modifiedRecordData.put("artist", "Animals As Leaders");
+                modifiedRecordData.put("releaseDate", "2005-06-25");
+                modifiedRecordData.put("title", "Title#");
+                modifiedRecordData.put("rented", false);
+
+                given().
+                        contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .body(gsonBuilder.toJson(modifiedRecordData))
+                        .when()
+                        .post(ROOT_URI + "/" + recordID + "/edit").then().assertThat()
+                        .statusCode(HttpStatus.SC_BAD_REQUEST);
+            } finally {
+                delete(ROOT_URI + "/" + recordID);
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 }
