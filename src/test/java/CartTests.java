@@ -20,9 +20,9 @@ public class CartTests {
 
     private final Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
 
-    private final String RENTS_URI = "http://localhost:8080/record-shop-1.0-SNAPSHOT/record-shop/users";
-    private final String USERS_URI = "http://localhost:8080/record-shop-1.0-SNAPSHOT/record-shop/users";
-    private final String RECORDS_URI = "http://localhost:8080/record-shop-1.0-SNAPSHOT/record-shop/records";
+    private final String RENTS_URI = "http://localhost:8080/record-shop/users";
+    private final String USERS_URI = "http://localhost:8080/record-shop/users";
+    private final String RECORDS_URI = "http://localhost:8080/record-shop/records";
     private Map<String, Object> renter = new HashMap<>();
     private Map<String, Object> client = new HashMap<>();
     private Map<String, Object> firstRecord = new HashMap<>();

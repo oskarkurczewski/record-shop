@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.is;
 
 public class UserTests {
 
-    final static String ROOT_URI = "http://localhost:8080/record-shop-1.0-SNAPSHOT/record-shop/users";
+    final static String ROOT_URI = "http://localhost:8080/record-shop/users";
     final private Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
 
 
