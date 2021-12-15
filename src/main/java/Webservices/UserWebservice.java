@@ -50,24 +50,24 @@ public class UserWebservice {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUser(String body) {
-            try {
-                JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
-                String login = jsonBody.get("login").getAsString();
-                if (!login.matches("^[a-zA-Z0-9_-]{8,16}$")) {
-                    throw new InputException("Login must be between 8 and 16 characters");
-                }
-
-                UserType type = UserType.valueOf(
-                        jsonBody.get("type").getAsString()
-                );
-
-                User user = new User(login, type);
-                userManager.appendUser(user);
-
-                return Response.status(200).entity(user).build();
-            } catch (NullPointerException | InputException | IllegalArgumentException | IllegalStateException e) {
-                return Response.status(400).entity(e).build();
+        try {
+            JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
+            String login = jsonBody.get("login").getAsString();
+            if (!login.matches("^[a-zA-Z0-9_-]{8,16}$")) {
+                throw new InputException("Login must be between 8 and 16 characters");
             }
+
+            UserType type = UserType.valueOf(
+                    jsonBody.get("type").getAsString()
+            );
+
+            User user = new User(login, type);
+            userManager.appendUser(user);
+
+            return Response.status(200).entity(user).build();
+        } catch (NullPointerException | InputException | IllegalArgumentException | IllegalStateException e) {
+            return Response.status(400).entity(e).build();
+        }
     }
 
     @DELETE

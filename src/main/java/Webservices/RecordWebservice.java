@@ -101,29 +101,19 @@ public class RecordWebservice {
             Record record = recordManager.getRecordByID(recordID);
 
             String title = jsonBody.get("title").getAsString();
-            if (title.length() != 0) {
-                if (!title.matches("^[a-zA-Z0-9_ -]{3,50}$")) {
-                    throw new InputException("Title must be between 3 and 50 characters");
-                }
-
-                record.setTitle(title);
+            if (title.length() != 0 || !title.matches("^[a-zA-Z0-9_ -]{3,50}$")) {
+                throw new InputException("Title must be between 3 and 50 characters");
             }
 
-            String artist = jsonBody.get("artist").getAsString();
-            if (artist.length() != 0) {
-                if (!artist.matches("^[a-zA-Z0-9_ -]{3,50}$")) {
-                    throw new InputException("Artist name must be between 3 and 50 characters");
-                }
 
-                record.setArtist(artist);
+            String artist = jsonBody.get("artist").getAsString();
+            if (artist.length() != 0 || !artist.matches("^[a-zA-Z0-9_ -]{3,50}$")) {
+                throw new InputException("Artist name must be between 3 and 50 characters");
             }
 
             String releaseDate = jsonBody.get("releaseDate").getAsString();
-            if (releaseDate.length() != 0) {
-                record.setReleaseDate(releaseDate);
-            }
 
-            recordManager.appendRecord(record);
+            recordManager.modifyRecord(record, title, artist, releaseDate);
 
             return Response.status(200).entity(record).build();
         } catch (InputException | ParseException e) {
