@@ -11,7 +11,7 @@ import java.util.List;
 public class UserManager {
     UserRepository repository = new UserRepository();
 
-    public void setUserLogin(String userid, String newLogin) throws InputException, NotFoundException {
+    public synchronized void setUserLogin(String userid, String newLogin) throws InputException, NotFoundException {
         User user = repository.getUserByID(userid);
 
         if (user.getLogin().equals(newLogin)) {
@@ -37,7 +37,7 @@ public class UserManager {
         return repository.getUserByLogin(login);
     }
 
-    public void extendRentReturnDays(String renterId, String userId, int days) throws RentalException, PermissionException, NotFoundException {
+    public synchronized void extendRentReturnDays(String renterId, String userId, int days) throws RentalException, PermissionException, NotFoundException {
         repository.extendRentReturnDays(renterId, userId, days);
     }
 
@@ -46,11 +46,11 @@ public class UserManager {
         return repository.getUsersByLogin(login);
     }
 
-    public void appendUser(User user) throws InputException {
+    public synchronized void appendUser(User user) throws InputException {
         repository.appendUser(user);
     }
 
-    public void removeUser(String userid) throws BasicException {
+    public synchronized void removeUser(String userid) throws BasicException {
         repository.removeUser(userid);
     }
 

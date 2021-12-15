@@ -22,11 +22,11 @@ public class RecordManager {
         return repository.getAllRecords();
     }
 
-    public void appendRecord(Record record){
+    public synchronized void appendRecord(Record record){
         repository.appendRecord(record);
     }
 
-    public void removeRecord(String recordid) throws RentalException, NotFoundException {
+    public synchronized void removeRecord(String recordid) throws RentalException, NotFoundException {
         repository.removeRecord(recordid);
     }
 
