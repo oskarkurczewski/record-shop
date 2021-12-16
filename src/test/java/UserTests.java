@@ -350,4 +350,46 @@ public class UserTests {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testModifyUserWithRepeatedLogin() {
+        Map<String, Object> user = new HashMap<>();
+        user.put("login", "janet1234");
+        user.put("type", "CLIENT");
+
+        Response createResponse = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(user))
+                .when()
+                .post(ROOT_URI);
+
+        try {
+            JSONObject POSTJson = (JSONObject) new JSONParser().parse(createResponse.asString());
+            String userID = (String) POSTJson.get("userID");
+
+            try {
+                createResponse.then().assertThat()
+                        .statusCode(HttpStatus.SC_OK)
+                        .body("login", is(user.get("login")))
+                        .body("type", is(user.get("type")));
+
+                String newLogin = "janet1234";
+
+                given()
+                        .contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .body("{\"login\": \"" + newLogin + "\"}")
+                        .when()
+                        .post(ROOT_URI + "/" + userID + "/changeLogin")
+                        .then().assertThat()
+                        .statusCode(HttpStatus.SC_BAD_REQUEST);
+
+            } finally {
+                delete(ROOT_URI + "/" + userID);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
 }
