@@ -164,6 +164,62 @@ public class UserTests {
     }
 
     @Test
+    public void testDeactivateAndActivateUser() {
+        Map<String, Object> user = new HashMap<>();
+        user.put("login", "janet1234");
+        user.put("type", "CLIENT");
+
+        Response createResponse = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(gsonBuilder.toJson(user))
+                .when()
+                .post(ROOT_URI);
+
+        try {
+            JSONObject POSTJson = (JSONObject) new JSONParser().parse(createResponse.asString());
+            String userID = (String) POSTJson.get("userID");
+
+            try {
+                createResponse.then().assertThat()
+                        .statusCode(HttpStatus.SC_OK)
+                        .body("login", is(user.get("login")))
+                        .body("type", is(user.get("type")));
+
+                Response deactivateResponse = given()
+                        .contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .when()
+                        .post(ROOT_URI + "/" + userID + "/deactivate");
+
+                deactivateResponse.then().assertThat()
+                        .statusCode(HttpStatus.SC_OK)
+                        .body("login", is(user.get("login")))
+                        .body("type", is(user.get("type")))
+                        .body("active", is(false));
+
+                Response activateResponse = given()
+
+                        .contentType(ContentType.JSON)
+                        .accept(ContentType.JSON)
+                        .when()
+                        .post(ROOT_URI + "/" + userID + "/activate");
+
+                activateResponse.then().assertThat()
+                        .statusCode(HttpStatus.SC_OK)
+                        .body("login", is(user.get("login")))
+                        .body("type", is(user.get("type")))
+                        .body("active", is(true));
+
+            } finally {
+                delete(ROOT_URI + "/" + userID);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void testGetUserWrongID() {
         String wrongID = "b3a1a7e3-e8c5-4426-837e-717528282664";
 
