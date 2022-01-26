@@ -48,7 +48,6 @@ public class UserWebservice {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     public Response addUser(String body) {
         try {
             JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();

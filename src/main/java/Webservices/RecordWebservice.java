@@ -60,7 +60,6 @@ public class RecordWebservice {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     public Response addNewRecord(String body) {
         try {
             JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
