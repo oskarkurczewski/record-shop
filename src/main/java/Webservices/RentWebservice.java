@@ -5,7 +5,9 @@ import Model.Exceptions.NotFoundException;
 import Model.Exceptions.PermissionException;
 import Model.Exceptions.RentalException;
 import Model.Managers.RecordManager;
+import Model.Managers.RentalManager;
 import Model.Managers.UserManager;
+import Model.Rental;
 import Model.User;
 import Model.Record;
 import com.google.gson.JsonObject;
@@ -16,6 +18,9 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
+
+
 
 @ApplicationScoped
 @Path("users")
@@ -27,141 +32,119 @@ public class RentWebservice {
     @Inject
     private RecordManager recordManager;
 
+    @Inject
+    private RentalManager rentalManager;
+
     @GET
-    @Path("{userID}/cart")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getCart(@PathParam("userID") String userID) {
-        try {
-            User user = userManager.getUserByID(userID);
-            return Response.ok(user.getCart()).build();
-        } catch (NotFoundException e) {
-            return Response.status(404).entity(e).build();
-        }
-    }
-
-    @POST
-    @Path("{userID}/cart")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response addRentToCart(@PathParam("userID") String userID, String body) {
-        try {
-            JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
-            String recordID = jsonBody.get("recordID").getAsString();
-            User user = userManager.getUserByID(userID);
-            user.addToCart(recordManager.getRecordByID(recordID));
-            return Response.ok(user.getCart()).build();
-        } catch (NotFoundException e) {
-            return Response.status(404).entity(e).build();
-        } catch (RentalException e) {
-            return Response.status(400).entity(e).build();
-        }
-    }
-
-    @DELETE
-    @Path("{userid}/cart/{recordid}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response removeRentFromCart(@PathParam("userid") String userid, @PathParam("recordid") String recordid) {
-        try {
-            User user = userManager.getUserByID(userid);
-            Record record = recordManager.getRecordByID(recordid);
-            user.removeFromCart(record);
-            return Response.ok(user.getCart()).build();
-        } catch (NotFoundException e) {
-            return Response.status(404).entity(e).build();
-        } catch (RentalException e) {
-            return Response.status(400).entity(e).build();
-        }
-    }
-
-    @DELETE
-    @Path("{userid}/cart")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response removeAllFromCart(@PathParam("userid") String userid)  {
-        try {
-            User user = userManager.getUserByID(userid);
-            user.clearCart();
-            return Response.ok(user.getCart()).build();
-        } catch (NotFoundException | RentalException e) {
-            return Response.status(404).entity(e).build();
-        }
+    @Path("/rentals")
+    public List<Rental> getAllRentals() {
+        return rentalManager.getAllRentals();
     }
 
     @GET
-    @Path("{userID}/rentals")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response getRents(@PathParam("userID") String userID) {
-        try {
-            User user = userManager.getUserByID(userID);
-            return Response.ok(user.getRentals()).build();
-        } catch (NotFoundException e) {
-            return Response.status(404).entity(e).build();
-        }
+    @Path("/archiveRentals")
+    public List<Rental> getAllArchiveRentals() {
+        return rentalManager.getAllArchiveRentals();
     }
 
-
-    @POST
-    @Path("{userID}/rentals")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response rentFromCart(@PathParam("userID") String userID, String body) {
-
-        JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
-        try {
-            User user = userManager.getUserByID(userID);
-            User renter = userManager.getUserByID(jsonBody.get("renterID").getAsString());
-            user.rentCart(renter);
-            return Response.ok(user.getRentals()).build();
-        } catch (NotFoundException e) {
-            return Response.status(404).entity(e).build();
-        } catch (PermissionException e) {
-            return Response.status(403).entity(e).build();
-        } catch (InputException | RentalException e) {
-            return Response.status(400).entity(e).build();
-        }
+    @GET
+    @Path("/{userID}/cart")
+    public List<Record> getCart(@PathParam("userID") String userID) throws NotFoundException {
+        User user = userManager.getUserByID(userID);
+        return user.getCart();
     }
 
     @POST
-    @Path("{userID}/rentals/clear")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response clearUserRentals(@PathParam("userID") String userID, String body) {
-
+    @Path("/{userID}/cart")
+    public List<Record> addRentToCart(@PathParam("userID") String userID, String body) throws NotFoundException,
+            RentalException
+    {
         JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
-        try {
-            User user = userManager.getUserByID(userID);
-            User renter = userManager.getUserByID(jsonBody.get("renterID").getAsString());
-            user.clearRentals(renter);
-            return Response.ok(user.getRentals()).build();
-        } catch (NotFoundException e) {
-            return Response.status(404).entity(e).build();
-        } catch (PermissionException e) {
-            return Response.status(403).entity(e).build();
-        } catch (RentalException e) {
-            return Response.status(400).entity(e).build();
-        }
+        String recordID = jsonBody.get("recordID").getAsString();
+
+        User user = userManager.getUserByID(userID);
+        user.addToCart(recordManager.getRecordByID(recordID));
+        return user.getCart();
+    }
+
+    @DELETE
+    @Path("/{userID}/cart/{recordID}")
+    public List<Record> removeRentFromCart(@PathParam("userID") String userID,
+                                           @PathParam("recordID") String recordID) throws NotFoundException,
+            RentalException
+    {
+        User user = userManager.getUserByID(userID);
+        Record record = recordManager.getRecordByID(recordID);
+        user.removeFromCart(record);
+        return user.getCart();
+    }
+
+    @DELETE
+    @Path("/{userID}/cart")
+    public List<Record> removeAllFromCart(@PathParam("userID") String userID) throws NotFoundException,
+            RentalException {
+        User user = userManager.getUserByID(userID);
+        user.clearCart();
+        return user.getCart();
+    }
+
+    @GET
+    @Path("/{userID}/rentals")
+    public List<Rental> getRents(@PathParam("userID") String userID) throws NotFoundException {
+        User user = userManager.getUserByID(userID);
+        return user.getRentals();
+    }
+
+    @GET
+    @Path("/{userID}/rentals/archive")
+    public List<Rental> getRentsArchive(@PathParam("userID") String userID) throws NotFoundException {
+        User user = userManager.getUserByID(userID);
+        return user.getArchiveRentals();
     }
 
     @POST
-    @Path("{userID}/rentals/extend")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response extendRentReturnDays(@PathParam("userID") String userID, String body) {
-
+    @Path("/{userID}/rentals")
+    public List<Rental> submitRentsFromCart(@PathParam("userID") String userID, String body) throws NotFoundException, PermissionException, RentalException, InputException {
         JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
-        try {
-            User user = userManager.getUserByID(userID);
-            String renter = jsonBody.get("renterID").getAsString();
-            int days = Integer.parseInt(jsonBody.get("days").toString());
 
-            userManager.extendRentReturnDays(renter, userID, days);
-            return Response.ok(user.getRentals()).build();
-        } catch (NotFoundException e) {
-            return Response.status(404).entity(e).build();
-        } catch (PermissionException | RentalException e) {
-            return Response.status(403).entity(e).build();
-        }
+        User user = userManager.getUserByID(userID);
+
+        User renter = userManager.getUserByID(jsonBody.get("renterID").getAsString());
+        List<Rental> newRentals = user.rentCart(renter);
+        rentalManager.appendRentals(newRentals);
+
+        return user.getRentals();
+    }
+
+    @POST
+    @Path("/{userID}/rentals/clear")
+    public List<Rental> clearUserRentals(@PathParam("userID") String userID,
+                                         String body) throws NotFoundException,
+            PermissionException,
+            RentalException, InputException {
+        JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
+
+        User user = userManager.getUserByID(userID);
+        User renter = userManager.getUserByID(jsonBody.get("renterID").getAsString());
+
+        rentalManager.archiveRentals(user.getRentals());
+        user.clearRentals(renter);
+        return user.getRentals();
+    }
+
+    @POST
+    @Path("/{userID}/rentals/extend")
+    public List<Rental> extendRentReturnDays(@PathParam("userID") String userID,
+                                             String body) throws NotFoundException,
+            PermissionException,
+            RentalException
+    {
+        JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
+        User user = userManager.getUserByID(userID);
+        String renter = jsonBody.get("renterID").getAsString();
+        int days = Integer.parseInt(jsonBody.get("days").toString());
+
+        userManager.extendRentReturnDays(renter, userID, days);
+        return user.getRentals();
     }
 }

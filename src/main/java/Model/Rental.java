@@ -7,15 +7,17 @@ import Model.Exceptions.RentalException;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 public class Rental {
+    private final UUID rentalID;
     private final String clientID;
     private final String renterID;
     private final String recordID;
 
-    private transient final User client;
-    private transient final User renter;
-    private transient final Record record;
+    private final User client;
+    private final User renter;
+    private final Record record;
 
     private final LocalDateTime rentDate;
     private LocalDateTime expectedReturnDate;
@@ -26,6 +28,7 @@ public class Rental {
             throw new PermissionException("Indicated renter has no permissions to do this operation");
         }
 
+        this.rentalID = UUID.randomUUID();
         this.clientID = client.getUserID().toString();
         this.renterID = renter.getUserID().toString();
         this.recordID = record.getRecordID().toString();
@@ -92,4 +95,7 @@ public class Rental {
     }
 
 
+    public Object getRentalID() {
+        return this.rentalID;
+    }
 }

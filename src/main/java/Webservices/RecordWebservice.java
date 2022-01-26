@@ -4,6 +4,7 @@ import Model.Exceptions.NotFoundException;
 import Model.Exceptions.RentalException;
 import Model.Managers.RecordManager;
 import Model.Record;
+import Model.Rental;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -13,6 +14,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
+import java.util.List;
 
 
 @ApplicationScoped
@@ -40,6 +42,20 @@ public class RecordWebservice {
         } catch (NotFoundException e) {
             return Response.status(404).entity(e).build();
         }
+    }
+
+    @GET
+    @Path("/{recordID}/currentRent")
+    public Rental getCurrentRent(@PathParam("recordID") String recordID) throws NotFoundException {
+        Record record = recordManager.getRecordByID(recordID);
+        return record.getCurrentRent();
+    }
+
+    @GET
+    @Path("/{recordID}/archiveRents")
+    public List<Rental> getArchiveRents(@PathParam("recordID") String recordID) throws NotFoundException {
+        Record record = recordManager.getRecordByID(recordID);
+        return record.getArchiveRents();
     }
 
     @POST

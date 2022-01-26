@@ -15,6 +15,8 @@ public class RecordRepository {
 
     public RecordRepository() {
         this.records  =  new ArrayList<>();
+        records.add(new Record("The Gods We Can Touch", "Aurora", "2022-01-22"));
+        records.add(new Record("No Love, Deep Web", "Death Grips", "2015-07-17"));
     }
 
     public List<Record> getAllRecords() {

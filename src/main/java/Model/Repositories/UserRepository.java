@@ -13,7 +13,7 @@ public class UserRepository {
 
     public UserRepository() {
         User[] arr = {
-                new User( "Eleanor", UserType.CLIENT),
+                new User( "Eleanor123", UserType.CLIENT),
                 new User("Jason", UserType.CLIENT),
                 new User("Chidi", UserType.CLIENT),
                 new User("Tahani", UserType.CLIENT),

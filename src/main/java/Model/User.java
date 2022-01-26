@@ -15,9 +15,10 @@ public class User {
     private String login;
     private final UserType type;
     private Boolean active = true;
-    private final List<Rental> rentals = new ArrayList<>();
-    private final List<Rental> archiveRentals = new ArrayList<>();
-    private final List<Record> cart = new ArrayList<>();
+
+    private final transient List<Rental> rentals = new ArrayList<>();
+    private final transient List<Rental> archiveRentals = new ArrayList<>();
+    private final transient List<Record> cart = new ArrayList<>();
 
     public User(String login, UserType type) {
         this.userID = UUID.randomUUID();
@@ -107,7 +108,9 @@ public class User {
         return archiveRentals;
     }
 
-    public void rentCart(User renter) throws PermissionException, InputException, RentalException {
+    public List<Rental> rentCart(User renter) throws PermissionException, InputException, RentalException {
+        List<Rental> newRentals = new ArrayList<>();
+
         if (!this.active) {
             throw new RentalException("User is not active");
         }
@@ -119,9 +122,11 @@ public class User {
         for (Record record : this.cart) {
             Rental newRent = new Rental(this, renter, record);
             rentals.add(newRent);
+            newRentals.add(newRent);
         }
 
         this.clearCart();
+        return newRentals;
     }
 
     public void clearRentals(User renter) throws PermissionException, RentalException {

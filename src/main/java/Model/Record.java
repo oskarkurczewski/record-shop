@@ -10,8 +10,8 @@ import java.util.*;
 
 public class Record {
     private UUID recordID;
-    private Rental currentRent;
-    private final List<Rental> archiveRents = new ArrayList<>();
+    private transient Rental currentRent;
+    private transient final List<Rental> archiveRents = new ArrayList<>();
     private boolean isRented;
 
     private String title;
