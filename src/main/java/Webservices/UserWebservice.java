@@ -6,24 +6,38 @@ import Model.Exceptions.NotFoundException;
 import Model.Managers.UserManager;
 import Model.User;
 import Model.UserType;
+import com.auth0.jwt.impl.JWTParser;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import javax.annotation.security.DenyAll;
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.security.Principal;
 import java.util.List;
 
-@ApplicationScoped
 @Path("users")
+//@DenyAll
+@ApplicationScoped
 public class UserWebservice {
 
     @Inject
     private UserManager userManager;
 
+    @Inject
+    private Principal principal;
+
+    @Inject
+    private JsonWebToken jsonWebToken;
+
     @GET
+    @RolesAllowed("ADMINISTRATOR")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers(@QueryParam("login") String login){
         if (login != null) {
@@ -35,6 +49,7 @@ public class UserWebservice {
 
     @GET
     @Path("{userID}")
+    @RolesAllowed({"ADMINISTRATOR, CLIENT, RENTER"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUser(@PathParam("userID") String userID) {
         try {
@@ -47,6 +62,7 @@ public class UserWebservice {
 
 
     @POST
+    @RolesAllowed("ADMINISTRATOR")
     @Produces(MediaType.APPLICATION_JSON)
     public Response addUser(String body) {
         try {
@@ -72,6 +88,7 @@ public class UserWebservice {
 
     @DELETE
     @Path("{userID}")
+    @RolesAllowed("ADMINISTRATOR")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteUser(@PathParam("userID") String userID){
@@ -88,6 +105,7 @@ public class UserWebservice {
 
     @POST
     @Path("{userID}/changeLogin")
+    @RolesAllowed("ADMINISTRATOR")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response changeUserLogin(@PathParam("userID") String userID, String body){
@@ -112,6 +130,7 @@ public class UserWebservice {
 
     @POST
     @Path("{userID}/activate")
+    @RolesAllowed("ADMINISTRATOR")
     @Produces(MediaType.APPLICATION_JSON)
     public Response activateUser(@PathParam("userID") String userID){
         try {
@@ -127,6 +146,7 @@ public class UserWebservice {
 
     @POST
     @Path("{userID}/deactivate")
+    @RolesAllowed("ADMINISTRATOR")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deactivateUser(@PathParam("userID") String userID){
         try {
