@@ -13,6 +13,7 @@ import java.util.UUID;
 public class User {
     private final UUID userID;
     private String login;
+    private transient String password;
     private final UserType type;
     private Boolean active = true;
 
@@ -20,9 +21,10 @@ public class User {
     private final transient List<Rental> archiveRentals = new ArrayList<>();
     private final transient List<Record> cart = new ArrayList<>();
 
-    public User(String login, UserType type) {
+    public User(String login, String password, UserType type) {
         this.userID = UUID.randomUUID();
         this.login = login;
+        this.password = password;
         this.type = type;
     }
 
@@ -32,6 +34,14 @@ public class User {
 
     public String getLogin() {
         return login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Boolean isActive() {

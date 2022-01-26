@@ -54,6 +54,10 @@ public class UserManager {
         repository.removeUser(userid);
     }
 
+    public User findByLoginPasswordActive(String login, String passwordAsString) {
+        return repository.findByLoginPasswordActive(login, passwordAsString);
+    }
+
 }
 
 

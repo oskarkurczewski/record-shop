@@ -52,6 +52,7 @@ public class UserWebservice {
         try {
             JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
             String login = jsonBody.get("login").getAsString();
+            String password = jsonBody.get("password").getAsString();
             if (!login.matches("^[a-zA-Z0-9_-]{8,16}$")) {
                 throw new InputException("Login must be between 8 and 16 characters");
             }
@@ -60,7 +61,7 @@ public class UserWebservice {
                     jsonBody.get("type").getAsString()
             );
 
-            User user = new User(login, type);
+            User user = new User(login, password, type);
             userManager.appendUser(user);
 
             return Response.status(200).entity(user).build();

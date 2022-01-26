@@ -13,12 +13,12 @@ public class UserRepository {
 
     public UserRepository() {
         User[] arr = {
-                new User( "Eleanor123", UserType.CLIENT),
-                new User("Jason", UserType.CLIENT),
-                new User("Chidi", UserType.CLIENT),
-                new User("Tahani", UserType.CLIENT),
-                new User("Michael", UserType.ADMINISTRATOR),
-                new User("DiscoJanet", UserType.RENTER)
+                new User( "Eleanor123", "P@ssw0rd", UserType.CLIENT),
+                new User("Jason", "P@ssw0rd", UserType.CLIENT),
+                new User("Chidi", "P@ssw0rd", UserType.CLIENT),
+                new User("Tahani", "P@ssw0rd", UserType.CLIENT),
+                new User("Michael", "P@ssw0rd", UserType.ADMINISTRATOR),
+                new User("DiscoJanet", "P@ssw0rd", UserType.RENTER)
         };
         this.users = new ArrayList<>(Arrays.asList(arr));
     }
@@ -69,5 +69,14 @@ public class UserRepository {
        User renter = this.getUserByID(renterId);
        User user = this.getUserByID(userId);
        user.extendRentReturnDays(renter, days);
+    }
+
+    public User findByLoginPasswordActive(String login, String passwordAsString) {
+        return users.stream()
+                .filter(user -> user.getLogin().equals(login)
+                        && user.getPassword().equals(passwordAsString)
+                        && user.isActive())
+                .findAny()
+                .orElse(null);
     }
 }
