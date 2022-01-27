@@ -13,6 +13,7 @@ import Model.Record;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -36,18 +37,21 @@ public class RentWebservice {
     private RentalManager rentalManager;
 
     @GET
+    @RolesAllowed("ADMINISTRATOR")
     @Path("/rentals")
     public List<Rental> getAllRentals() {
         return rentalManager.getAllRentals();
     }
 
     @GET
+    @RolesAllowed("ADMINISTRATOR")
     @Path("/archiveRentals")
     public List<Rental> getAllArchiveRentals() {
         return rentalManager.getAllArchiveRentals();
     }
 
     @GET
+    @RolesAllowed("CLIENT")
     @Path("/{userID}/cart")
     public List<Record> getCart(@PathParam("userID") String userID) throws NotFoundException {
         User user = userManager.getUserByID(userID);
@@ -55,6 +59,7 @@ public class RentWebservice {
     }
 
     @POST
+    @RolesAllowed("CLIENT")
     @Path("/{userID}/cart")
     public List<Record> addRentToCart(@PathParam("userID") String userID, String body) throws NotFoundException,
             RentalException
@@ -68,6 +73,7 @@ public class RentWebservice {
     }
 
     @DELETE
+    @RolesAllowed("CLIENT")
     @Path("/{userID}/cart/{recordID}")
     public List<Record> removeRentFromCart(@PathParam("userID") String userID,
                                            @PathParam("recordID") String recordID) throws NotFoundException,
@@ -80,6 +86,7 @@ public class RentWebservice {
     }
 
     @DELETE
+    @RolesAllowed("ADMINISTRATOR")
     @Path("/{userID}/cart")
     public List<Record> removeAllFromCart(@PathParam("userID") String userID) throws NotFoundException,
             RentalException {
@@ -89,6 +96,7 @@ public class RentWebservice {
     }
 
     @GET
+    @RolesAllowed("ADMINISTRATOR")
     @Path("/{userID}/rentals")
     public List<Rental> getRents(@PathParam("userID") String userID) throws NotFoundException {
         User user = userManager.getUserByID(userID);
@@ -96,6 +104,7 @@ public class RentWebservice {
     }
 
     @GET
+    @RolesAllowed("ADMINISTRATOR")
     @Path("/{userID}/rentals/archive")
     public List<Rental> getRentsArchive(@PathParam("userID") String userID) throws NotFoundException {
         User user = userManager.getUserByID(userID);
@@ -103,6 +112,7 @@ public class RentWebservice {
     }
 
     @POST
+    @RolesAllowed("ADMINISTRATOR")
     @Path("/{userID}/rentals")
     public List<Rental> submitRentsFromCart(@PathParam("userID") String userID, String body) throws NotFoundException, PermissionException, RentalException, InputException {
         JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
@@ -117,6 +127,7 @@ public class RentWebservice {
     }
 
     @POST
+    @RolesAllowed("ADMINISTRATOR")
     @Path("/{userID}/rentals/clear")
     public List<Rental> clearUserRentals(@PathParam("userID") String userID,
                                          String body) throws NotFoundException,
@@ -133,6 +144,7 @@ public class RentWebservice {
     }
 
     @POST
+    @RolesAllowed("ADMINISTRATOR")
     @Path("/{userID}/rentals/extend")
     public List<Rental> extendRentReturnDays(@PathParam("userID") String userID,
                                              String body) throws NotFoundException,

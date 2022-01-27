@@ -8,6 +8,7 @@ import Model.Rental;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -25,6 +26,7 @@ public class RecordWebservice {
     private RecordManager recordManager;
 
     @GET
+    @RolesAllowed({"CLIENT", "ADMINISTRATOR", "RENTER"})
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getRecords() {
@@ -32,6 +34,7 @@ public class RecordWebservice {
     }
 
     @GET
+    @RolesAllowed({"CLIENT", "ADMINISTRATOR", "RENTER"})
     @Path("{recordID}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -45,6 +48,7 @@ public class RecordWebservice {
     }
 
     @GET
+    @RolesAllowed({"ADMINISTRATOR", "RENTER"})
     @Path("/{recordID}/currentRent")
     public Rental getCurrentRent(@PathParam("recordID") String recordID) throws NotFoundException {
         Record record = recordManager.getRecordByID(recordID);
@@ -52,6 +56,7 @@ public class RecordWebservice {
     }
 
     @GET
+    @RolesAllowed({"ADMINISTRATOR", "RENTER"})
     @Path("/{recordID}/archiveRents")
     public List<Rental> getArchiveRents(@PathParam("recordID") String recordID) throws NotFoundException {
         Record record = recordManager.getRecordByID(recordID);
@@ -59,6 +64,7 @@ public class RecordWebservice {
     }
 
     @POST
+    @RolesAllowed("ADMINISTRATOR")
     @Produces(MediaType.APPLICATION_JSON)
     public Response addNewRecord(String body) {
         try {
@@ -86,6 +92,7 @@ public class RecordWebservice {
     }
 
     @DELETE
+    @RolesAllowed("ADMINISTRATOR")
     @Path("{recordID}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -102,6 +109,7 @@ public class RecordWebservice {
     }
 
     @POST
+    @RolesAllowed("ADMINISTRATOR")
     @Path("{recordID}/edit")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)

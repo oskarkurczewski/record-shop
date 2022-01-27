@@ -129,6 +129,25 @@ public class UserWebservice {
     }
 
     @POST
+    @Path("{userID}/changePassword")
+    @RolesAllowed({"ADMINISTRATOR", "RENTER", "CLIENT"})
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response changeUserPassword(@PathParam("userID") String userID, String body) {
+        JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
+        String newPassword = jsonBody.get("password").getAsString();
+        System.out.println("Trying to change user password to " + newPassword);
+
+        try {
+            User user = userManager.getUserByID(userID);
+            user.changePassword(newPassword);
+            return Response.ok(user).build();
+        } catch (NotFoundException e) {
+            System.out.println("GOT 404 ERROR STATUS CODEk");
+            return Response.status(404).entity(e).build();
+        }
+    }
+
+    @POST
     @Path("{userID}/activate")
     @RolesAllowed("ADMINISTRATOR")
     @Produces(MediaType.APPLICATION_JSON)

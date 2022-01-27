@@ -63,6 +63,10 @@ public class User {
         this.active = false;
     }
 
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
     public void setLogin(String login) {
         this.login = login;
     }

@@ -5,6 +5,7 @@ import Model.User;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.security.enterprise.CallerPrincipal;
 import javax.security.enterprise.credential.Credential;
 import javax.security.enterprise.credential.UsernamePasswordCredential;
 import javax.security.enterprise.identitystore.CredentialValidationResult;
@@ -24,8 +25,7 @@ public class InMemIdentityStore implements IdentityStore {
         if (credential instanceof UsernamePasswordCredential) {
             UsernamePasswordCredential usernamePasswordCredential = (UsernamePasswordCredential) credential;
             User user = userManager.findByLoginPasswordActive(usernamePasswordCredential.getCaller(), usernamePasswordCredential.getPasswordAsString());
-            return (null != user ? new CredentialValidationResult(user.getLogin(), new HashSet<>(Arrays.asList(user.getType().name()))) : CredentialValidationResult.INVALID_RESULT);
-
+            return (null != user ? new CredentialValidationResult(null, user.getLogin(), null, user.getUserID().toString(), new HashSet<>(Arrays.asList(user.getType().name()))) : CredentialValidationResult.INVALID_RESULT);
         }
         return CredentialValidationResult.NOT_VALIDATED_RESULT;
     }
