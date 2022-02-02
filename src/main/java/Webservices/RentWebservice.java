@@ -12,6 +12,7 @@ import Model.User;
 import Model.Record;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.security.Principal;
 import java.util.List;
 
 
@@ -35,6 +37,12 @@ public class RentWebservice {
 
     @Inject
     private RentalManager rentalManager;
+
+    @Inject
+    private Principal principal;
+
+    @Inject
+    private JsonWebToken jsonWebToken;
 
     @GET
     @RolesAllowed({"ADMINISTRATOR", "RENTER"})
@@ -114,12 +122,10 @@ public class RentWebservice {
     @POST
     @RolesAllowed({"ADMINISTRATOR", "RENTER"})
     @Path("/{userID}/rentals")
-    public List<Rental> submitRentsFromCart(@PathParam("userID") String userID, String body) throws NotFoundException, PermissionException, RentalException, InputException {
-        JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
-
+    public List<Rental> submitRentsFromCart(@PathParam("userID") String userID) throws NotFoundException, PermissionException, RentalException, InputException {
         User user = userManager.getUserByID(userID);
 
-        User renter = userManager.getUserByID(jsonBody.get("renterID").getAsString());
+        User renter = userManager.getUserByID(jsonWebToken.getSubject());
         List<Rental> newRentals = user.rentCart(renter);
         rentalManager.appendRentals(newRentals);
 
@@ -129,14 +135,12 @@ public class RentWebservice {
     @POST
     @RolesAllowed({"ADMINISTRATOR", "RENTER"})
     @Path("/{userID}/rentals/clear")
-    public List<Rental> clearUserRentals(@PathParam("userID") String userID,
-                                         String body) throws NotFoundException,
+    public List<Rental> clearUserRentals(@PathParam("userID") String userID) throws NotFoundException,
             PermissionException,
             RentalException, InputException {
-        JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
 
         User user = userManager.getUserByID(userID);
-        User renter = userManager.getUserByID(jsonBody.get("renterID").getAsString());
+        User renter = userManager.getUserByID(jsonWebToken.getSubject());
 
         rentalManager.archiveRentals(user.getRentals());
         user.clearRentals(renter);
@@ -153,10 +157,9 @@ public class RentWebservice {
     {
         JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
         User user = userManager.getUserByID(userID);
-        String renter = jsonBody.get("renterID").getAsString();
         int days = Integer.parseInt(jsonBody.get("days").toString());
 
-        userManager.extendRentReturnDays(renter, userID, days);
+        userManager.extendRentReturnDays(jsonWebToken.getSubject(), userID, days);
         return user.getRentals();
     }
 }

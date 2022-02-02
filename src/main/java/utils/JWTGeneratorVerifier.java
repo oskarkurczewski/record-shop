@@ -29,6 +29,7 @@ public class JWTGeneratorVerifier {
                     .withKeyId("abc-1234567890")
                     .withIssuer("zespol1")
                     .withClaim("groups", new ArrayList<>(credential.getCallerGroups()))
+                    .withClaim("userid", credential.getCallerUniqueId())
                     .withSubject(credential.getCallerUniqueId())
                     .withJWTId("a-123")
                     .withAudience("s6BhdRkqt3")
