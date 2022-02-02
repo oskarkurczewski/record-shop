@@ -37,7 +37,7 @@ public class UserWebservice {
     private JsonWebToken jsonWebToken;
 
     @GET
-    @RolesAllowed("ADMINISTRATOR")
+    @RolesAllowed({"ADMINISTRATOR", "RENTER"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers(@QueryParam("login") String login){
         if (login != null) {
@@ -49,7 +49,7 @@ public class UserWebservice {
 
     @GET
     @Path("{userID}")
-    @RolesAllowed({"ADMINISTRATOR, CLIENT, RENTER"})
+    @RolesAllowed({"ADMINISTRATOR", "CLIENT", "RENTER"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUser(@PathParam("userID") String userID) {
         try {
@@ -130,7 +130,7 @@ public class UserWebservice {
 
     @POST
     @Path("{userID}/changePassword")
-    @RolesAllowed({"ADMINISTRATOR", "RENTER", "CLIENT"})
+    @RolesAllowed({"ADMINISTRATOR", "CLIENT"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response changeUserPassword(@PathParam("userID") String userID, String body) {
         JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
