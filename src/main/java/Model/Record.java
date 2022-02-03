@@ -3,12 +3,13 @@ package Model;
 import Model.Exceptions.InputException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import utils.Signable;
 
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.*;
 
-public class Record {
+public class Record implements Signable {
     private UUID recordID;
     private transient Rental currentRent;
     private transient final List<Rental> archiveRents = new ArrayList<>();
@@ -109,5 +110,10 @@ public class Record {
         return new HashCodeBuilder(17, 37)
                 .append(recordID)
                 .toHashCode();
+    }
+
+    @Override
+    public String getSignableFields() {
+        return recordID.toString();
     }
 }

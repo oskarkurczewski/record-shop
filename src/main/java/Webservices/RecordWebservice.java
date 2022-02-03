@@ -7,10 +7,12 @@ import Model.Record;
 import Model.Rental;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import utils.EntitySigner;
 
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -41,7 +43,7 @@ public class RecordWebservice {
     public Response getRecord(@PathParam("recordID") String recordID) {
         try {
             Record recordFound = recordManager.getRecordByID(recordID);
-            return Response.ok(recordFound).build();
+            return Response.ok(recordFound).header("Etag", EntitySigner.calculateSignature(recordFound)).build();
         } catch (NotFoundException e) {
             return Response.status(404).entity(e).build();
         }
@@ -113,11 +115,13 @@ public class RecordWebservice {
     @Path("{recordID}/edit")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response modifyRecord(@PathParam("recordID") String recordID, String body) {
+    public Response modifyRecord(@PathParam("recordID") String recordID, String body, @HeaderParam("If-Match") @NotNull String etag) {
+        System.out.println("SRAKEN PIERDAKEN");
         try {
             JsonObject jsonBody = JsonParser.parseString(body).getAsJsonObject();
 
             if (!recordID.matches("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b")) {
+                System.out.println("Wrong uuid format");
                 throw new InputException("Wrong uuid format");
             }
 
@@ -125,18 +129,20 @@ public class RecordWebservice {
 
             String title = jsonBody.get("title").getAsString();
             if (title.isEmpty() || !title.matches("^[a-zA-Z0-9_ -]{3,50}$")) {
+                System.out.println("Title must be between 3 and 50 characters");
                 throw new InputException("Title must be between 3 and 50 characters");
             }
 
 
             String artist = jsonBody.get("artist").getAsString();
             if (artist.isEmpty() || !artist.matches("^[a-zA-Z0-9_ -]{3,50}$")) {
+                System.out.println("Artist name must be between 3 and 50 characters");
                 throw new InputException("Artist name must be between 3 and 50 characters");
             }
 
             String releaseDate = jsonBody.get("releaseDate").getAsString();
 
-            recordManager.modifyRecord(record, title, artist, releaseDate);
+            recordManager.modifyRecord(record, title, artist, releaseDate, etag);
 
             return Response.status(200).entity(record).build();
         } catch (InputException | ParseException e) {

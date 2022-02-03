@@ -4,6 +4,7 @@ import Model.Exceptions.NotFoundException;
 import Model.Exceptions.RentalException;
 import Model.Record;
 import Model.Repositories.RecordRepository;
+import utils.EntitySigner;
 
 import java.text.ParseException;
 import java.util.List;
@@ -31,7 +32,12 @@ public class RecordManager {
         repository.removeRecord(recordid);
     }
 
-    public synchronized void modifyRecord(Record record, String title, String artist, String releaseDate) throws ParseException {
+    public synchronized void modifyRecord(Record record, String title, String artist, String releaseDate, String etag) throws ParseException {
+
+        if (! EntitySigner.verifyEntity(etag, record)) {
+            throw new IllegalArgumentException("You are trying to modify the wrong record!");
+        }
+
         if (title.length() > 0) {
             record.setTitle(title);
         }
