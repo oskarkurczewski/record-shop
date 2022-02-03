@@ -6,7 +6,7 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import utils.Signable;
 
 public class EntitySigner {
-    private static final String SECRET = "51655468576D5A7134743777217A25432A46294A404E635266556A586E327235";
+    private static final String SECRET = "404D6251655468576D5A7134743777217A25432A462D4A614E645266556A586E";
     public static String calculateSignature(Signable s) {
         try {
             JWSSigner signer = new MACSigner(SECRET);
