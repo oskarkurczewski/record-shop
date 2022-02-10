@@ -139,10 +139,17 @@ public class UserWebservice {
 
         try {
             User user = userManager.getUserByID(userID);
+
+            if (! newPassword.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,16}$")) {
+                throw new InputException("Password must be between 8 and 16 characters and contain at least one letter and one number");
+            }
+
             user.changePassword(newPassword);
             return Response.ok(user).build();
+        } catch (InputException e) {
+            return Response.status(400).entity(e).build();
         } catch (NotFoundException e) {
-            System.out.println("GOT 404 ERROR STATUS CODEk");
+            System.out.println("GOT 404 ERROR STATUS CODE");
             return Response.status(404).entity(e).build();
         }
     }
